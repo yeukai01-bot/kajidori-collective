@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 
+// These emails always route to the Admin dashboard regardless of DB or metadata
+const ADMIN_EMAILS = ['yeukai@kajidori.co.uk']
+
 export default function PortalRouter() {
   const [role, setRole] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -16,7 +19,14 @@ export default function PortalRouter() {
         return
       }
 
-      // Query using the authenticated user's JWT (bypasses RLS issues)
+      // PRIORITY 1: Hardcoded admin emails always win — no DB or metadata override possible
+      if (ADMIN_EMAILS.includes(session.user.email?.toLowerCase())) {
+        setRole('admin')
+        setLoading(false)
+        return
+      }
+
+      // PRIORITY 2: Query the portal_users table for the stored role
       const { data, error } = await supabase
         .from('portal_users_1741860000000')
         .select('role')
@@ -27,30 +37,21 @@ export default function PortalRouter() {
         console.error('PortalRouter role fetch error:', error)
       }
 
-      // If we got a role from the DB, use it
       if (data?.role) {
         setRole(data.role)
         setLoading(false)
         return
       }
 
-      // Fallback: check user_metadata (set during registration)
+      // PRIORITY 3: Fallback to user_metadata set during registration
       const metaRole = session.user.user_metadata?.role
-      if (metaRole) {
+      if (metaRole && ['admin', 'manager', 'participant'].includes(metaRole)) {
         setRole(metaRole)
         setLoading(false)
         return
       }
 
-      // Last resort: check email against known admin
-      // This ensures admin access even if DB row is missing
-      const adminEmails = ['yeukai@kajidori.co.uk']
-      if (adminEmails.includes(session.user.email)) {
-        setRole('admin')
-        setLoading(false)
-        return
-      }
-
+      // Default: treat as participant
       setRole('participant')
       setLoading(false)
     }
