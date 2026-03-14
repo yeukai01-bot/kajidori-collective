@@ -48,52 +48,23 @@ export default function Home() {
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section className="bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 text-white min-h-[90vh] flex items-center px-4 py-16">
-        <div className="max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-16 items-center">
-
-          {/* Left: copy */}
-          <div>
-            <p className="text-yellow-400 font-bold text-xs uppercase tracking-[0.25em] mb-5">The Kajidori Collective</p>
-            <h1 className="text-5xl md:text-6xl font-extrabold leading-[1.1] mb-6">
-              Transforming Health &amp; Social Care,<br />
-              <span className="text-yellow-400">One Leader at a Time.</span>
-            </h1>
-            <p className="text-blue-200 text-lg leading-relaxed mb-10 max-w-lg">
-              Your Partner in Compliance, Excellence, and Inspired Leadership — serving health and social care organisations across the UK.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/contact" className="bg-yellow-400 text-blue-900 px-8 py-4 rounded-lg font-bold text-lg hover:bg-yellow-300 transition-colors text-center">
-                Work With Us
-              </Link>
-              <Link to="/portal/login" className="border-2 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-blue-900 transition-colors text-center">
-                Client Portal
-              </Link>
-            </div>
+        <div className="max-w-5xl mx-auto w-full text-center">
+          <p className="text-yellow-400 font-bold text-xs uppercase tracking-[0.3em] mb-6">The Kajidori Collective</p>
+          <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.1] mb-8">
+            Transforming Health &amp; Social Care,<br />
+            <span className="text-yellow-400">One Leader at a Time.</span>
+          </h1>
+          <p className="text-blue-200 text-xl leading-relaxed mb-12 max-w-3xl mx-auto">
+            Your Partner in Compliance, Excellence, and Inspired Leadership — serving health and social care organisations across the UK.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/contact" className="bg-yellow-400 text-blue-900 px-10 py-5 rounded-xl font-bold text-lg hover:bg-yellow-300 transition-colors">
+              Work With Us
+            </Link>
+            <Link to="/portal/login" className="border-2 border-white text-white px-10 py-5 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-900 transition-colors">
+              Client Portal
+            </Link>
           </div>
-
-          {/* Right: photo + floating stats */}
-          <div className="relative flex justify-center">
-            <div className="relative w-80 md:w-96">
-              <div className="rounded-3xl overflow-hidden border-4 border-yellow-400 shadow-2xl">
-                <img
-                  src={PHOTO_SMILING}
-                  alt="Yeukai Kajidori — Founder, The Kajidori Collective"
-                  className="w-full h-[520px] object-cover object-top"
-                />
-              </div>
-              {/* Floating name card */}
-              <div className="absolute -bottom-6 -left-6 bg-white text-blue-900 rounded-2xl px-5 py-4 shadow-xl">
-                <p className="font-extrabold text-base leading-tight">Yeukai Kajidori</p>
-                <p className="text-xs text-slate-500 mt-0.5">Founder &amp; Director</p>
-                <p className="text-xs text-slate-500">The Kajidori Collective</p>
-              </div>
-              {/* Floating credential badge */}
-              <div className="absolute -top-4 -right-4 bg-yellow-400 text-blue-900 rounded-2xl px-4 py-3 shadow-xl text-center">
-                <p className="font-extrabold text-sm">20+ Years</p>
-                <p className="text-xs font-medium">HSC Expertise</p>
-              </div>
-            </div>
-          </div>
-
         </div>
       </section>
 
