@@ -15,6 +15,9 @@ import AdminDashboard from './pages/portal/AdminDashboard'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 
+// These emails always have admin access regardless of what is stored in the database
+const ADMIN_EMAILS = ['yeukai@kajidori.co.uk']
+
 function ProtectedRoute({ children, requiredRole }) {
   const { user, profile, loading } = useAuth()
   if (loading) return (
@@ -23,7 +26,9 @@ function ProtectedRoute({ children, requiredRole }) {
     </div>
   )
   if (!user) return <Navigate to="/portal/login" replace />
-  if (requiredRole && profile?.role !== requiredRole && profile?.role !== 'admin') return <Navigate to="/portal/login" replace />
+  // Hardcoded admin emails always pass through regardless of DB role
+  const isAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase())
+  if (requiredRole && !isAdmin && profile?.role !== requiredRole && profile?.role !== 'admin') return <Navigate to="/portal/login" replace />
   return children
 }
 
@@ -31,6 +36,9 @@ function PortalRedirect() {
   const { user, profile, loading } = useAuth()
   if (loading) return null
   if (!user) return <Navigate to="/portal/login" replace />
+  // PRIORITY 1: Hardcoded admin emails always go to admin dashboard
+  if (ADMIN_EMAILS.includes(user.email?.toLowerCase())) return <Navigate to="/portal/admin" replace />
+  // PRIORITY 2: Use role from portal_users table
   if (profile?.role === 'admin') return <Navigate to="/portal/admin" replace />
   if (profile?.role === 'manager' || profile?.role === 'compliance') return <Navigate to="/portal/manager" replace />
   return <Navigate to="/portal/participant" replace />
