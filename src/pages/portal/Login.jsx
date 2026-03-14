@@ -130,7 +130,10 @@ export default function Login() {
 
           <p className="text-center text-sm text-slate-500 mt-6">
             Don&apos;t have an account?{' '}
-            <Link to="/portal/register" className="text-blue-700 font-medium hover:underline">
+            <Link
+              to={portalType === 'management' ? '/portal/register?role=manager' : '/portal/register?role=participant'}
+              className="text-blue-700 font-medium hover:underline"
+            >
               Register here
             </Link>
           </p>

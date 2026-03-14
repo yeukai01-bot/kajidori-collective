@@ -8,6 +8,7 @@ import CaseStudies from './pages/CaseStudies'
 import Login from './pages/portal/Login'
 import Register from './pages/portal/Register'
 import ForgotPassword from './pages/portal/ForgotPassword'
+import ResetPassword from './pages/portal/ResetPassword'
 import ParticipantDashboard from './pages/portal/ParticipantDashboard'
 import ManagerDashboard from './pages/portal/ManagerDashboard'
 import AdminDashboard from './pages/portal/AdminDashboard'
@@ -56,6 +57,7 @@ export default function App() {
       <Route path="/portal/login" element={<Login />} />
       <Route path="/portal/register" element={<Register />} />
       <Route path="/portal/forgot-password" element={<ForgotPassword />} />
+      <Route path="/portal/reset-password" element={<ResetPassword />} />
       <Route path="/portal/participant/*" element={<ProtectedRoute><ParticipantDashboard /></ProtectedRoute>} />
       <Route path="/portal/manager/*" element={<ProtectedRoute requiredRole="manager"><ManagerDashboard /></ProtectedRoute>} />
       <Route path="/portal/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />

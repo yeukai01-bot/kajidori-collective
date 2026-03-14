@@ -1,57 +1,89 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { supabase } from '../../lib/supabase'
+import { Link, useSearchParams } from 'react-router-dom'
+import { supabase, TABLES } from '../../lib/supabase'
 
 export default function Register() {
-  const [form, setForm] = useState({ fullName: '', email: '', password: '', confirmPassword: '', organisation: '', role: 'participant' })
+  const [searchParams] = useSearchParams()
+  const defaultRole = searchParams.get('role') === 'manager' ? 'manager' : 'participant'
+  const [form, setForm] = useState({ fullName: '', email: '', organisation: '', jobTitle: '', role: defaultRole, password: '', confirmPassword: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-  const navigate = useNavigate()
+  const [needsConfirmation, setNeedsConfirmation] = useState(false)
 
   const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    if (form.password !== form.confirmPassword) {
-      setError('Passwords do not match.')
-      return
-    }
     if (form.password.length < 8) {
       setError('Password must be at least 8 characters.')
       return
     }
+    if (form.password !== form.confirmPassword) {
+      setError('Passwords do not match.')
+      return
+    }
     setLoading(true)
 
-    try {
-      // Try the handle_registration_v4 function that exists in Supabase
-      const { data, error: fnError } = await supabase.rpc('handle_registration_v4', {
-        p_email: form.email,
-        p_password: form.password,
-        p_full_name: form.fullName,
-        p_organisation_name: form.organisation || null,
-        p_role: form.role,
-      })
+    const { data: authData, error: signUpError } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: {
+        data: { full_name: form.fullName, role: form.role },
+        emailRedirectTo: `${window.location.origin}/portal/login`,
+      },
+    })
 
-      if (fnError) {
-        // Fallback: try direct auth signup
-        const { error: authError } = await supabase.auth.signUp({
-          email: form.email,
-          password: form.password,
-          options: {
-            data: { full_name: form.fullName, organisation: form.organisation, role: form.role },
-          },
-        })
-        if (authError) throw authError
-      }
-
-      setSuccess(true)
-    } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.')
-    } finally {
+    if (signUpError) {
+      setError(signUpError.message)
       setLoading(false)
+      return
     }
+
+    // Detect duplicate account (Supabase returns empty identities array)
+    if (authData?.user?.identities?.length === 0) {
+      setError('An account with this email already exists. Please sign in instead.')
+      setLoading(false)
+      return
+    }
+
+    const userId = authData?.user?.id
+    if (userId) {
+      const nameParts = form.fullName.trim().split(' ')
+      const firstName = nameParts[0] || ''
+      const lastName = nameParts.slice(1).join(' ') || ''
+      await supabase.from(TABLES.USERS).upsert({
+        id: userId,
+        first_name: firstName,
+        last_name: lastName,
+        email: form.email,
+        role: form.role,
+        job_title: form.jobTitle || null,
+      }, { onConflict: 'id' })
+    }
+
+    // If no session, email confirmation is required
+    if (!authData?.session) {
+      setNeedsConfirmation(true)
+    } else {
+      setSuccess(true)
+    }
+    setLoading(false)
+  }
+
+  if (needsConfirmation) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl p-10 text-center max-w-md shadow-xl">
+          <div className="text-5xl mb-4">📧</div>
+          <h2 className="text-2xl font-bold text-blue-900 mb-3">Check Your Email</h2>
+          <p className="text-slate-600 mb-2">We have sent a confirmation link to <strong>{form.email}</strong>.</p>
+          <p className="text-slate-500 text-sm mb-6">Please click the link in that email to activate your account, then return here to sign in.</p>
+          <Link to="/portal/login" className="bg-blue-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-colors inline-block">Go to Sign In</Link>
+        </div>
+      </div>
+    )
   }
 
   if (success) {
@@ -61,9 +93,7 @@ export default function Register() {
           <div className="text-5xl mb-4">✅</div>
           <h2 className="text-2xl font-bold text-blue-900 mb-3">Registration Successful!</h2>
           <p className="text-slate-600 mb-6">Your account has been created. You can now sign in to access the portal.</p>
-          <Link to="/portal/login" className="bg-blue-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-colors inline-block">
-            Sign In Now
-          </Link>
+          <Link to="/portal/login" className="bg-blue-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-colors inline-block">Sign In Now</Link>
         </div>
       </div>
     )
@@ -103,12 +133,25 @@ export default function Register() {
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">I am registering as</label>
-            <select name="role" value={form.role} onChange={handleChange}
-              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="participant">Training Participant</option>
-              <option value="manager">Manager / Team Lead</option>
-            </select>
+            <div className="grid grid-cols-2 rounded-lg overflow-hidden border border-slate-200">
+              <button type="button" onClick={() => setForm(p => ({ ...p, role: 'participant' }))}
+                className={`py-2.5 text-sm font-semibold transition-colors ${form.role !== 'manager' ? 'bg-blue-900 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}>
+                Training Participant
+              </button>
+              <button type="button" onClick={() => setForm(p => ({ ...p, role: 'manager' }))}
+                className={`py-2.5 text-sm font-semibold transition-colors ${form.role === 'manager' ? 'bg-blue-900 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}>
+                Manager / Senior Lead
+              </button>
+            </div>
           </div>
+          {form.role === 'manager' && (
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Job Title</label>
+              <input type="text" name="jobTitle" value={form.jobTitle} onChange={handleChange}
+                className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g. Registered Manager, Operations Director" />
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Password <span className="text-red-500">*</span></label>
             <input type="password" name="password" value={form.password} onChange={handleChange} required
