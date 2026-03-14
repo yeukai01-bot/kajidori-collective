@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
         .from(TABLES.USERS)
         .select('*')
         .eq('id', userId)
-        .single()
+        .maybeSingle()
       if (!error && data) setProfile(data)
     } catch (e) {
       console.error('Profile fetch error:', e)

@@ -5,11 +5,12 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJ
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-// Confirmed table names from Supabase OpenAPI spec
+// Confirmed table names from Supabase schema
 export const TABLES = {
   USERS: 'portal_users_1741860000000',
   ORGANISATIONS: 'organisations_1741860000000',
   PROGRAMMES: 'programmes_1741860000000',
+  SESSIONS: 'sessions_1741860000000',
   ATTENDANCE: 'attendance_1741860000000',
   CERTIFICATES: 'certificates_1741860000000',
   MENTORING: 'mentoring_sessions_1741860000000',
@@ -17,9 +18,13 @@ export const TABLES = {
 
 // Column reference for portal_users_1741860000000:
 // id, first_name, last_name, email, role, job_title, organisation_id, created_at
+// roles: 'admin' | 'manager' | 'participant'
 
 // Column reference for programmes_1741860000000:
 // id, name, description, duration_weeks, created_at
+
+// Column reference for sessions_1741860000000:
+// id, programme_id, organisation_id, title, description, session_date, start_time, end_time, location, facilitator, max_participants, status, created_at
 
 // Column reference for attendance_1741860000000:
 // id, user_id, programme_id, session_name, check_in_time, ip_address, created_at
