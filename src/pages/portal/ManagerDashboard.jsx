@@ -27,22 +27,35 @@ export default function ManagerDashboard() {
     const orgId = profile?.organisation_id
     let teamQuery = supabase.from(TABLES.USERS).select('*').eq('role', 'participant')
     if (orgId) teamQuery = teamQuery.eq('organisation_id', orgId)
-    const { data: team } = await teamQuery.order('last_name')
-    setTeamMembers(team || [])
+    const { data: team, error: teamErr } = await teamQuery.order('last_name')
+    if (teamErr) console.error('Team query error:', teamErr)
+    const teamList = team || []
+    setTeamMembers(teamList)
 
     // Load programmes
-    const { data: p } = await supabase.from(TABLES.PROGRAMMES).select('*').order('name')
-    setProgrammes(p || [])
+    const { data: p, error: progErr } = await supabase.from(TABLES.PROGRAMMES).select('*').order('name')
+    if (progErr) console.error('Programmes query error:', progErr)
+    const progList = p || []
+    setProgrammes(progList)
 
-    // Load all attendance for team
-    const teamIds = (team || []).map(m => m.id)
+    // Load all attendance for team — use simple query then enrich client-side
+    const teamIds = teamList.map(m => m.id)
     if (teamIds.length > 0) {
-      const { data: att } = await supabase
+      const { data: att, error: attErr } = await supabase
         .from(TABLES.ATTENDANCE)
-        .select(`*, ${TABLES.PROGRAMMES}(name), ${TABLES.USERS}(first_name, last_name, email)`)
+        .select('*')
         .in('user_id', teamIds)
         .order('check_in_time', { ascending: false })
-      setAllAttendance(att || [])
+      if (attErr) console.error('Attendance query error:', attErr)
+      // Enrich attendance with member and programme info client-side
+      const enriched = (att || []).map(a => ({
+        ...a,
+        _member: teamList.find(m => m.id === a.user_id),
+        _programme: progList.find(pr => pr.id === a.programme_id),
+      }))
+      setAllAttendance(enriched)
+    } else {
+      setAllAttendance([])
     }
 
     setLoading(false)
@@ -256,11 +269,11 @@ export default function ManagerDashboard() {
                     {allAttendance.map(a => (
                       <tr key={a.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                         <td className="px-4 py-3 font-medium text-slate-800">
-                          {a[TABLES.USERS]
-                            ? `${a[TABLES.USERS].first_name || ''} ${a[TABLES.USERS].last_name || ''}`.trim() || a[TABLES.USERS].email
+                          {a._member
+                            ? `${a._member.first_name || ''} ${a._member.last_name || ''}`.trim() || a._member.email
                             : 'Unknown'}
                         </td>
-                        <td className="px-4 py-3 text-slate-600">{a[TABLES.PROGRAMMES]?.name || '—'}</td>
+                        <td className="px-4 py-3 text-slate-600">{a._programme?.name || '—'}</td>
                         <td className="px-4 py-3 text-slate-600">{a.session_name}</td>
                         <td className="px-4 py-3 text-slate-500">
                           {a.check_in_time
