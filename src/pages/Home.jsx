@@ -11,12 +11,15 @@ export default function Home() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1 text-center md:text-left">
             <p className="text-yellow-400 font-semibold text-sm uppercase tracking-widest mb-4">The Kajidori Collective</p>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              Transforming Health &amp; Social Care,<br />
-              <span className="text-yellow-400">One Leader at a Time.</span>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+              The UK's Premier Partner in<br />
+              <span className="text-yellow-400">Health &amp; Social Care Excellence.</span>
             </h1>
-            <p className="text-blue-100 text-lg max-w-xl mb-10 leading-relaxed">
-              Your Partner in Compliance, Excellence, and Inspired Leadership — serving health and social care organisations across the UK.
+            <p className="text-blue-100 text-xl font-medium max-w-xl mb-3 leading-snug">
+              Compliance. Leadership. Transformation.
+            </p>
+            <p className="text-blue-200 text-base max-w-xl mb-10 leading-relaxed">
+              We equip health and social care organisations across the UK with the training, mentoring, and strategic leadership needed to meet CQC standards, retain top talent, and deliver outstanding care — one leader at a time.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link to="/contact" className="bg-yellow-400 text-blue-900 px-8 py-4 rounded-lg font-bold text-lg hover:bg-yellow-300 transition-colors">
