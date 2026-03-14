@@ -27,15 +27,7 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="flex-shrink-0">
-            <div className="w-72 h-80 md:w-80 md:h-96 rounded-2xl overflow-hidden border-4 border-yellow-400 shadow-2xl">
-              <img
-                src={PHOTO_SEATED}
-                alt="Yeukai Kajidori — Founder, The Kajidori Collective"
-                className="w-full h-full object-cover object-top"
-              />
-            </div>
-          </div>
+
         </div>
       </section>
 
