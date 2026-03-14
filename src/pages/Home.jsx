@@ -212,7 +212,7 @@ export default function Home() {
               {[
                 'Sector-specific expertise across all care settings',
                 'Proven track record of Good and Outstanding CQC outcomes',
-                'Bespoke programmes tailored to your organisation's needs',
+                  "Bespoke programmes tailored to your organisation's needs",
                 'Ongoing support — not a one-off training day',
                 'Led by a practitioner, not a theorist',
               ].map(point => (
