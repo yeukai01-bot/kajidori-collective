@@ -23,6 +23,7 @@ export default function Navbar() {
             <Link to="/about" className={`text-sm transition-colors ${active('/about')}`}>About</Link>
             <Link to="/services" className={`text-sm transition-colors ${active('/services')}`}>Services</Link>
             <Link to="/case-studies" className={`text-sm transition-colors ${active('/case-studies')}`}>Case Studies</Link>
+            <Link to="/#pricing" className="text-sm text-white hover:text-yellow-300 transition-colors">Pricing</Link>
             <Link to="/contact" className={`text-sm transition-colors ${active('/contact')}`}>Work With Us</Link>
             <Link to="/portal/login" className="bg-yellow-400 text-blue-900 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-yellow-300 transition-colors">
               Client Portal
