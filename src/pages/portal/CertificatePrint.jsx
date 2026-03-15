@@ -598,9 +598,8 @@ export default function CertificatePrint() {
               <thead>
                 <tr style={{ background: '#1e3a5f' }}>
                   <th style={{ padding: '3mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '6%' }}>#</th>
-                  <th style={{ padding: '3mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '28%' }}>Module Title</th>
-                  <th style={{ padding: '3mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '10%' }}>Duration</th>
-                  <th style={{ padding: '3mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '56%' }}>Regulatory &amp; CQC References</th>
+                  <th style={{ padding: '3mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '32%' }}>Module Title</th>
+                  <th style={{ padding: '3mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '62%' }}>Regulatory &amp; CQC References</th>
                 </tr>
               </thead>
               <tbody>
@@ -724,9 +723,6 @@ export default function CertificatePrint() {
                       <div style={{ fontSize: '7.5px', color: mod.core ? '#059669' : '#64748b' }}>
                         {mod.core ? '● Core Module' : '○ Optional Module'}
                       </div>
-                    </td>
-                    <td style={{ padding: '2.5mm 3mm', borderBottom: '0.5px solid rgba(30,58,95,0.1)', color: '#475569', whiteSpace: 'nowrap' }}>
-                      {mod.duration}
                     </td>
                     <td style={{ padding: '2.5mm 3mm', borderBottom: '0.5px solid rgba(30,58,95,0.1)' }}>
                       {mod.refs.map((ref, ri) => (
