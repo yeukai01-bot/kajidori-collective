@@ -234,11 +234,18 @@ export default function Home() {
                   </div>
                   {rev.headline && <h3 className="font-bold text-blue-900 mb-2 text-sm">&ldquo;{rev.headline}&rdquo;</h3>}
                   <p className="text-slate-600 text-sm leading-relaxed flex-1 mb-4">{rev.review_text}</p>
-                  <div className="border-t border-slate-100 pt-3">
-                    <div className="font-semibold text-slate-800 text-sm">{rev.reviewer_name}</div>
-                    <div className="text-xs text-slate-500">{rev.reviewer_role ? rev.reviewer_role.charAt(0).toUpperCase() + rev.reviewer_role.slice(1) : ''}{rev.organisation ? ` · ${rev.organisation}` : ''}</div>
-                    <div className="mt-1">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                  <div className="border-t border-slate-100 pt-3 flex items-center gap-3">
+                    {rev.reviewer_avatar ? (
+                      <img src={rev.reviewer_avatar} alt={rev.reviewer_name} className="w-11 h-11 rounded-full object-cover border-2 border-blue-100 flex-shrink-0" />
+                    ) : (
+                      <div className="w-11 h-11 rounded-full bg-blue-900 flex items-center justify-center text-white font-bold text-base flex-shrink-0">
+                        {(rev.reviewer_name || '?')[0].toUpperCase()}
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-slate-800 text-sm truncate">{rev.reviewer_name}</div>
+                      <div className="text-xs text-slate-500 truncate">{rev.reviewer_role ? rev.reviewer_role.charAt(0).toUpperCase() + rev.reviewer_role.slice(1) : ''}{rev.organisation ? ` · ${rev.organisation}` : ''}</div>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium mt-1 inline-block ${
                         rev.service_type === 'consulting' ? 'bg-purple-100 text-purple-700' :
                         rev.service_type === 'training' ? 'bg-blue-100 text-blue-700' :
                         'bg-green-100 text-green-700'

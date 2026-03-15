@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { supabase, TABLES } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 
-const TABS = ['Overview', 'My Training', 'Team Compliance', 'Attendance', 'Reports', 'Feedback', 'Leave a Review']
+const TABS = ['Overview', 'My Training', 'Team Compliance', 'Attendance', 'Reports', 'Feedback', 'Leave a Review', 'My Profile']
 
 // All 8 workshop sessions — 6 core + 2 optional
 const WORKSHOP_SESSIONS = [
@@ -48,6 +48,10 @@ export default function ManagerDashboard() {
   const [reviewForm, setReviewForm] = useState({ rating: 5, headline: '', review_text: '', service_type: 'training' })
   const [reviewSubmitting, setReviewSubmitting] = useState(false)
   const [reviewDone, setReviewDone] = useState(false)
+  // Profile photo state
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState(null)
+  const [avatarMsg, setAvatarMsg] = useState('')
 
   const displayName = profile
     ? [profile.first_name, profile.last_name].filter(Boolean).join(' ') || profile.email
@@ -938,6 +942,8 @@ export default function ManagerDashboard() {
                   headline: reviewForm.headline || null,
                   review_text: reviewForm.review_text,
                   approved: false,
+                  user_id: user?.id || null,
+                  reviewer_avatar: profile?.avatar_url || avatarUrl || null,
                 }])
                 setReviewSubmitting(false)
                 if (!error) setReviewDone(true)
@@ -962,12 +968,55 @@ export default function ManagerDashboard() {
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Your Review <span className="text-red-500">*</span></label>
                   <textarea required value={reviewForm.review_text} onChange={e => setReviewForm(f => ({...f, review_text: e.target.value}))} rows={5} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Share your experience in detail — what you learned, how it helped you, what stood out..." />
                 </div>
-                <button type="submit" disabled={reviewSubmitting} className="w-full bg-yellow-400 text-blue-900 py-3 rounded-lg font-bold text-sm hover:bg-yellow-300 transition-colors disabled:opacity-50">{reviewSubmitting ? 'Submitting...' : '⭐ Submit Review'}</button>
+                 <button type="submit" disabled={reviewSubmitting} className="w-full bg-yellow-400 text-blue-900 py-3 rounded-lg font-bold text-sm hover:bg-yellow-300 transition-colors disabled:opacity-50">{reviewSubmitting ? 'Submitting...' : '⭐ Submit Review'}</button>
               </form>
             )}
           </div>
         )}
 
+        {/* MY PROFILE TAB */}
+        {tab === 'My Profile' && (
+          <div className="max-w-lg">
+            <h2 className="text-2xl font-bold text-blue-900 mb-2">My Profile</h2>
+            <p className="text-slate-500 text-sm mb-6">Upload a profile photo. It will appear alongside any approved reviews on our website.</p>
+            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
+              <div className="flex flex-col items-center gap-4">
+                {(avatarUrl || profile?.avatar_url) ? (
+                  <img src={avatarUrl || profile?.avatar_url} alt="Profile" className="w-28 h-28 rounded-full object-cover border-4 border-blue-100 shadow" />
+                ) : (
+                  <div className="w-28 h-28 rounded-full bg-blue-100 flex items-center justify-center text-4xl font-bold text-blue-900">
+                    {(profile?.first_name?.[0] || user?.email?.[0] || '?').toUpperCase()}
+                  </div>
+                )}
+                <div className="text-center">
+                  <p className="font-semibold text-slate-800">{[profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || user?.email}</p>
+                  <p className="text-sm text-slate-500 capitalize">{profile?.role || 'Manager'} &middot; {profile?.organisations_1741860000000?.name || 'No organisation'}</p>
+                </div>
+                <label className="cursor-pointer">
+                  <span className="inline-block bg-blue-900 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition-colors">
+                    {avatarUploading ? 'Uploading...' : 'Upload Photo'}
+                  </span>
+                  <input type="file" accept="image/*" className="hidden" disabled={avatarUploading} onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    if (!file || !user) return
+                    setAvatarUploading(true); setAvatarMsg('')
+                    const ext = file.name.split('.').pop()
+                    const path = `${user.id}/avatar.${ext}`
+                    const { error: upErr } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
+                    if (upErr) { setAvatarMsg('Upload failed: ' + upErr.message); setAvatarUploading(false); return }
+                    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+                    const { error: dbErr } = await supabase.from('portal_users_1741860000000').update({ avatar_url: publicUrl }).eq('id', user.id)
+                    if (dbErr) { setAvatarMsg('Saved photo but could not update profile: ' + dbErr.message) }
+                    else { setAvatarUrl(publicUrl); setAvatarMsg('Profile photo updated!') }
+                    setAvatarUploading(false)
+                  }} />
+                </label>
+                {avatarMsg && <p className={`text-sm ${avatarMsg.startsWith('Profile') ? 'text-green-600' : 'text-red-500'}`}>{avatarMsg}</p>}
+                <p className="text-xs text-slate-400 text-center">Accepted formats: JPG, PNG, GIF. Max 5MB.<br/>Your photo will appear on approved reviews on our website.</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

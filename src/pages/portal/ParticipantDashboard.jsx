@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { supabase, TABLES } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 
-const TABS = ['Overview', 'Check-In', 'Certificates', 'Mentoring', 'Feedback', 'Leave a Review']
+const TABS = ['Overview', 'Check-In', 'Certificates', 'Mentoring', 'Feedback', 'Leave a Review', 'My Profile']
 
 // All 8 workshop sessions — 6 core + 2 optional
 const WORKSHOP_SESSIONS = [
@@ -34,6 +34,10 @@ export default function ParticipantDashboard() {
   const [reviewSubmitting, setReviewSubmitting] = useState(false)
   const [reviewDone, setReviewDone] = useState(false)
 
+  // Profile photo state
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState(null)
+  const [avatarMsg, setAvatarMsg] = useState('')
   // Workshop check-in state
   const [workshopProgramme, setWorkshopProgramme] = useState('')
   const [workshopDate, setWorkshopDate] = useState(new Date().toISOString().split('T')[0])
@@ -698,6 +702,49 @@ export default function ParticipantDashboard() {
           </div>
         )}
 
+        {/* MY PROFILE TAB */}
+        {tab === 'My Profile' && (
+          <div className="max-w-lg">
+            <h2 className="text-2xl font-bold text-blue-900 mb-2">My Profile</h2>
+            <p className="text-slate-500 text-sm mb-6">Upload a profile photo. It will appear alongside any approved reviews on our website.</p>
+            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
+              <div className="flex flex-col items-center gap-4">
+                {(avatarUrl || profile?.avatar_url) ? (
+                  <img src={avatarUrl || profile?.avatar_url} alt="Profile" className="w-28 h-28 rounded-full object-cover border-4 border-blue-100 shadow" />
+                ) : (
+                  <div className="w-28 h-28 rounded-full bg-blue-100 flex items-center justify-center text-4xl font-bold text-blue-900">
+                    {(profile?.first_name?.[0] || user?.email?.[0] || '?').toUpperCase()}
+                  </div>
+                )}
+                <div className="text-center">
+                  <p className="font-semibold text-slate-800">{[profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || user?.email}</p>
+                  <p className="text-sm text-slate-500 capitalize">{profile?.role || 'Participant'} &middot; {profile?.organisations_1741860000000?.name || 'No organisation'}</p>
+                </div>
+                <label className="cursor-pointer">
+                  <span className="inline-block bg-blue-900 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition-colors">
+                    {avatarUploading ? 'Uploading...' : 'Upload Photo'}
+                  </span>
+                  <input type="file" accept="image/*" className="hidden" disabled={avatarUploading} onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    if (!file || !user) return
+                    setAvatarUploading(true); setAvatarMsg('')
+                    const ext = file.name.split('.').pop()
+                    const path = `${user.id}/avatar.${ext}`
+                    const { error: upErr } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
+                    if (upErr) { setAvatarMsg('Upload failed: ' + upErr.message); setAvatarUploading(false); return }
+                    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+                    const { error: dbErr } = await supabase.from('portal_users_1741860000000').update({ avatar_url: publicUrl }).eq('id', user.id)
+                    if (dbErr) { setAvatarMsg('Saved photo but could not update profile: ' + dbErr.message) }
+                    else { setAvatarUrl(publicUrl); setAvatarMsg('Profile photo updated!') }
+                    setAvatarUploading(false)
+                  }} />
+                </label>
+                {avatarMsg && <p className={`text-sm ${avatarMsg.startsWith('Profile') ? 'text-green-600' : 'text-red-500'}`}>{avatarMsg}</p>}
+                <p className="text-xs text-slate-400 text-center">Accepted formats: JPG, PNG, GIF. Max 5MB.<br/>Your photo will appear on approved reviews on our website.</p>
+              </div>
+            </div>
+          </div>
+        )}
         {/* LEAVE A REVIEW TAB */}
         {tab === 'Leave a Review' && (
           <div className="max-w-2xl">
@@ -721,6 +768,8 @@ export default function ParticipantDashboard() {
                   headline: reviewForm.headline || null,
                   review_text: reviewForm.review_text,
                   approved: false,
+                  user_id: user?.id || null,
+                  reviewer_avatar: profile?.avatar_url || avatarUrl || null,
                 }])
                 setReviewSubmitting(false)
                 if (!error) setReviewDone(true)
