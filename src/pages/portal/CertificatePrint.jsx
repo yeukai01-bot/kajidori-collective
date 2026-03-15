@@ -154,11 +154,21 @@ export default function CertificatePrint() {
         @media print {
           body { margin: 0; background: white; }
           .no-print { display: none !important; }
+          .cert-page-wrapper { background: white !important; padding: 0 !important; display: block !important; }
           .cert-outer {
             width: 297mm !important;
-            min-height: 210mm !important;
+            height: 210mm !important;
+            min-height: unset !important;
+            max-height: 210mm !important;
             box-shadow: none !important;
             margin: 0 !important;
+            overflow: hidden !important;
+            page-break-after: always !important;
+            break-after: page !important;
+          }
+          .cert-outer:last-child {
+            page-break-after: avoid !important;
+            break-after: avoid !important;
           }
           @page {
             size: A4 landscape;
@@ -201,7 +211,7 @@ export default function CertificatePrint() {
       </div>
 
       {/* Page wrapper */}
-      <div style={{ background: '#d1d5db', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
+      <div className="cert-page-wrapper" style={{ background: '#d1d5db', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '40px 20px', gap: '32px' }}>
 
         {/* ═══════════════════════════════════════════════════
             CERTIFICATE — A4 Landscape (297mm × 210mm)
@@ -217,7 +227,7 @@ export default function CertificatePrint() {
           className="cert-outer"
           style={{
             width: '297mm',
-            minHeight: '210mm',
+            height: '210mm',
             maxWidth: '100%',
             position: 'relative',
             background: '#ffffff',
@@ -323,11 +333,12 @@ export default function CertificatePrint() {
           {/* ── CONTENT (z-index 5+) ── */}
           <div style={{
             position: 'relative', zIndex: 5,
-            padding: '22mm 24mm 18mm',
+            padding: '18mm 24mm 14mm',
             display: 'flex', flexDirection: 'column', alignItems: 'center',
             textAlign: 'center',
-            minHeight: '210mm',
+            height: '210mm',
             boxSizing: 'border-box',
+            overflow: 'hidden',
           }}>
 
             {/* Logo + org name */}
@@ -516,16 +527,16 @@ export default function CertificatePrint() {
             BACK PAGE — Module Breakdown & Regulatory Refs
         ═══════════════════════════════════════════════════ */}
         <div
+          className="cert-outer"
           style={{
-            width: '297mm',
-            minHeight: '210mm',
-            maxWidth: '100%',
-            position: 'relative',
-            background: '#ffffff',
-            boxShadow: '0 25px 60px rgba(0,0,0,0.4)',
-            overflow: 'hidden',
-            fontFamily: "'EB Garamond', Georgia, serif",
-            marginTop: '20px',
+          width: '297mm',
+          height: '210mm',
+          maxWidth: '100%',
+          position: 'relative',
+          background: '#ffffff',
+          boxShadow: '0 25px 60px rgba(0,0,0,0.4)',
+          overflow: 'hidden',
+          fontFamily: "'EB Garamond', Georgia, serif",
           }}>
 
           {/* Guilloche background */}
@@ -568,24 +579,25 @@ export default function CertificatePrint() {
           {/* Back page content */}
           <div style={{
             position: 'relative', zIndex: 5,
-            padding: '22mm 24mm 18mm',
-            minHeight: '210mm',
+            padding: '18mm 24mm 12mm',
+            height: '210mm',
             boxSizing: 'border-box',
+            overflow: 'hidden',
           }}>
 
             {/* Header */}
-            <div style={{ textAlign: 'center', marginBottom: '5mm' }}>
-              <div style={{ fontSize: '8px', letterSpacing: '4px', textTransform: 'uppercase', color: '#94a3b8', fontFamily: 'Arial, sans-serif', marginBottom: '2mm' }}>
+            <div style={{ textAlign: 'center', marginBottom: '3mm' }}>
+              <div style={{ fontSize: '7px', letterSpacing: '4px', textTransform: 'uppercase', color: '#94a3b8', fontFamily: 'Arial, sans-serif', marginBottom: '1.5mm' }}>
                 Certificate Ref: {refNumber} &nbsp;·&nbsp; {recipientName}
               </div>
-              <div style={{ fontSize: '16px', fontWeight: '700', color: '#1e3a5f', fontFamily: "'Cinzel', serif", marginBottom: '1.5mm' }}>
+              <div style={{ fontSize: '14px', fontWeight: '700', color: '#1e3a5f', fontFamily: "'Cinzel', serif", marginBottom: '1mm' }}>
                 Programme Content &amp; Regulatory Framework
               </div>
-              <div style={{ fontSize: '10px', color: '#64748b', fontFamily: 'Arial, sans-serif', fontStyle: 'italic' }}>
+              <div style={{ fontSize: '9px', color: '#64748b', fontFamily: 'Arial, sans-serif', fontStyle: 'italic' }}>
                 Compliance to Excellence — Full-Day Workshop Programme
               </div>
               {/* Divider */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3mm' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2mm' }}>
                 <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, #c9a227)' }} />
                 <div style={{ color: '#c9a227', fontSize: '12px' }}>✦</div>
                 <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, #c9a227, transparent)' }} />
@@ -593,12 +605,12 @@ export default function CertificatePrint() {
             </div>
 
             {/* Module table */}
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9px', fontFamily: 'Arial, sans-serif' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8px', fontFamily: 'Arial, sans-serif' }}>
               <thead>
                 <tr style={{ background: '#1e3a5f' }}>
-                  <th style={{ padding: '3mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '6%' }}>#</th>
-                  <th style={{ padding: '3mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '32%' }}>Module Title</th>
-                  <th style={{ padding: '3mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '62%' }}>Regulatory &amp; CQC References</th>
+                  <th style={{ padding: '2mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '6%' }}>#</th>
+                  <th style={{ padding: '2mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '32%' }}>Module Title</th>
+                  <th style={{ padding: '2mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '62%' }}>Regulatory &amp; CQC References</th>
                 </tr>
               </thead>
               <tbody>
@@ -709,23 +721,23 @@ export default function CertificatePrint() {
                   },
                 ].map((mod, idx) => (
                   <tr key={mod.num} style={{ background: idx % 2 === 0 ? 'rgba(30,58,95,0.03)' : 'white', verticalAlign: 'top' }}>
-                    <td style={{ padding: '2.5mm 3mm', borderBottom: '0.5px solid rgba(30,58,95,0.1)' }}>
+                    <td style={{ padding: '1.5mm 3mm', borderBottom: '0.5px solid rgba(30,58,95,0.1)' }}>
                       <div style={{
-                        width: '6mm', height: '6mm', borderRadius: '50%',
+                        width: '5mm', height: '5mm', borderRadius: '50%',
                         background: mod.core ? '#1e3a5f' : '#64748b',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: 'white', fontWeight: '700', fontSize: '8px',
+                        color: 'white', fontWeight: '700', fontSize: '7px',
                       }}>{mod.num}</div>
                     </td>
-                    <td style={{ padding: '2.5mm 3mm', borderBottom: '0.5px solid rgba(30,58,95,0.1)' }}>
-                      <div style={{ fontWeight: '700', color: '#1e3a5f', fontSize: '9.5px', marginBottom: '0.5mm' }}>{mod.title}</div>
-                      <div style={{ fontSize: '7.5px', color: mod.core ? '#059669' : '#64748b' }}>
+                    <td style={{ padding: '1.5mm 3mm', borderBottom: '0.5px solid rgba(30,58,95,0.1)' }}>
+                      <div style={{ fontWeight: '700', color: '#1e3a5f', fontSize: '8.5px', marginBottom: '0.3mm' }}>{mod.title}</div>
+                      <div style={{ fontSize: '7px', color: mod.core ? '#059669' : '#64748b' }}>
                         {mod.core ? '● Core Module' : '○ Optional Module'}
                       </div>
                     </td>
-                    <td style={{ padding: '2.5mm 3mm', borderBottom: '0.5px solid rgba(30,58,95,0.1)' }}>
+                    <td style={{ padding: '1.5mm 3mm', borderBottom: '0.5px solid rgba(30,58,95,0.1)' }}>
                       {mod.refs.map((ref, ri) => (
-                        <div key={ri} style={{ color: '#374151', fontSize: '8.5px', lineHeight: 1.5, marginBottom: ri < mod.refs.length - 1 ? '0.5mm' : 0 }}>
+                        <div key={ri} style={{ color: '#374151', fontSize: '7.5px', lineHeight: 1.4, marginBottom: ri < mod.refs.length - 1 ? '0.3mm' : 0 }}>
                           <span style={{ color: '#c9a227', marginRight: '1.5mm' }}>▸</span>{ref}
                         </div>
                       ))}
@@ -736,7 +748,7 @@ export default function CertificatePrint() {
             </table>
 
             {/* Footer */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: '4mm 0 3mm' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: '2mm 0 1.5mm' }}>
               <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, #1e3a5f)' }} />
               <div style={{ color: '#1e3a5f', fontSize: '10px' }}>◆</div>
               <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, #1e3a5f, transparent)' }} />
