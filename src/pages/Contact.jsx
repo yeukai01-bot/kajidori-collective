@@ -6,6 +6,7 @@ const TABS = [
   { id: 'consulting', label: 'Strategic Consulting', icon: '🏛️' },
   { id: 'training', label: 'Mental Health Training', icon: '🧠' },
   { id: 'mentoring', label: 'Leadership Mentoring', icon: '🎯' },
+  { id: 'ai', label: 'AI Integration Workshop', icon: '🤖', isNew: true },
 ]
 
 const FIELDS = {
@@ -36,6 +37,23 @@ const FIELDS = {
     { name: 'goals', label: 'What are your main development goals?', type: 'textarea', required: true },
     { name: 'experience', label: 'Years of experience in health and social care', type: 'number', required: false },
   ],
+  ai: [
+    { name: 'fullName', label: 'Full Name', type: 'text', required: true },
+    { name: 'jobTitle', label: 'Job Title', type: 'text', required: true },
+    { name: 'organisation', label: 'Organisation Name', type: 'text', required: true },
+    { name: 'email', label: 'Email Address', type: 'email', required: true },
+    { name: 'phone', label: 'Phone Number', type: 'tel', required: false },
+    { name: 'staffCount', label: 'Approximate number of delegates', type: 'number', required: false },
+    { name: 'aiWorkshop', label: 'Which workshop are you interested in?', type: 'select', required: true,
+      options: [
+        'AI for Care Documentation (Half Day — £1,600)',
+        'Responsible AI in Social Care (Full Day — £2,400)',
+        'AI for CQC Inspection Readiness (Full Day — £2,400)',
+        'Not sure — I would like to discuss',
+      ]
+    },
+    { name: 'message', label: 'Tell us about your organisation and what you hope to achieve', type: 'textarea', required: false },
+  ],
 }
 
 export default function Contact() {
@@ -47,7 +65,6 @@ export default function Contact() {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
 
-  // Update tab when URL param changes
   useEffect(() => {
     const t = searchParams.get('type')
     if (t && TABS.find(x => x.id === t)) setTab(t)
@@ -72,7 +89,7 @@ export default function Contact() {
           phone: form.phone || null,
           organisation: form.organisation || null,
           role_title: form.jobTitle || null,
-          message: form.challenge || form.goals || form.message || null,
+          message: form.challenge || form.goals || form.message || form.aiWorkshop || null,
           staff_count: form.staffCount ? String(form.staffCount) : null,
           status: 'new',
         }])
@@ -108,21 +125,24 @@ export default function Contact() {
     <div className="min-h-screen bg-slate-50">
       <div className="bg-blue-900 text-white py-16 px-4 text-center">
         <h1 className="text-4xl font-bold mb-4">Work With Us</h1>
-        <p className="text-blue-200 max-w-2xl mx-auto">Choose the service you are interested in and complete the application form below.</p>
+        <p className="text-blue-200 max-w-2xl mx-auto">Choose the service you are interested in and complete the application form below. We respond within one business day.</p>
       </div>
 
       <div className="max-w-2xl mx-auto py-12 px-4">
         {/* Tab switcher */}
-        <div className="flex rounded-xl overflow-hidden border border-slate-200 mb-8 bg-white shadow-sm">
+        <div className="grid grid-cols-2 md:grid-cols-4 rounded-xl overflow-hidden border border-slate-200 mb-8 bg-white shadow-sm">
           {TABS.map(t => (
             <button
               key={t.id}
               onClick={() => { setTab(t.id); setForm({}) }}
-              className={`flex-1 py-3 px-2 text-sm font-medium transition-colors flex flex-col items-center gap-1 ${
+              className={`py-3 px-2 text-sm font-medium transition-colors flex flex-col items-center gap-1 relative ${
                 tab === t.id ? 'bg-blue-900 text-white' : 'text-slate-600 hover:bg-slate-50'
               }`}
             >
-              <span>{t.icon}</span>
+              {t.isNew && (
+                <span className="absolute top-1 right-1 bg-yellow-400 text-blue-900 text-[9px] font-bold px-1 rounded-full leading-tight">NEW</span>
+              )}
+              <span className="text-lg">{t.icon}</span>
               <span className="text-xs leading-tight text-center">{t.label}</span>
             </button>
           ))}
@@ -130,9 +150,14 @@ export default function Contact() {
 
         {/* Form */}
         <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
-          <h2 className="text-xl font-bold text-blue-900 mb-6">
+          <h2 className="text-xl font-bold text-blue-900 mb-2">
             {TABS.find(t => t.id === tab)?.icon} {TABS.find(t => t.id === tab)?.label} Enquiry
           </h2>
+          {tab === 'ai' && (
+            <p className="text-sm text-blue-600 bg-blue-50 rounded-lg px-4 py-2 mb-5">
+              🤖 <strong>New for 2026.</strong> Be among the first care organisations to integrate AI responsibly — before your competitors.
+            </p>
+          )}
 
           {error && <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">{error}</div>}
 
@@ -152,6 +177,19 @@ export default function Contact() {
                     className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                     placeholder={`Enter ${field.label.toLowerCase()}...`}
                   />
+                ) : field.type === 'select' ? (
+                  <select
+                    name={field.name}
+                    value={form[field.name] || ''}
+                    onChange={handleChange}
+                    required={field.required}
+                    className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="">Select an option...</option>
+                    {field.options.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
                 ) : (
                   <input
                     type={field.type}
