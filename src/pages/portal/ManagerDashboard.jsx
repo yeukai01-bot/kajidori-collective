@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase, TABLES } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 
@@ -584,11 +584,13 @@ export default function ManagerDashboard() {
                   {myCertificates.map(cert => (
                     <div key={cert.id}>
                       <div className="flex justify-end mb-3">
-                        <button
-                          onClick={() => window.print()}
-                          className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition-colors">
-                          🖨️ Print / Save as PDF
-                        </button>
+                        <Link
+                          to={`/portal/certificate/${cert.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition-colors flex items-center gap-2">
+                          🖨️ Download / Print Certificate
+                        </Link>
                       </div>
                       <div
                         className="bg-white border-8 border-double border-blue-900 rounded-2xl p-10 shadow-xl text-center relative overflow-hidden"

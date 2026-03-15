@@ -12,6 +12,7 @@ import ResetPassword from './pages/portal/ResetPassword'
 import ParticipantDashboard from './pages/portal/ParticipantDashboard'
 import ManagerDashboard from './pages/portal/ManagerDashboard'
 import AdminDashboard from './pages/portal/AdminDashboard'
+import CertificatePrint from './pages/portal/CertificatePrint'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 
@@ -69,6 +70,7 @@ export default function App() {
       <Route path="/portal/participant/*" element={<ProtectedRoute><ParticipantDashboard /></ProtectedRoute>} />
       <Route path="/portal/manager/*" element={<ProtectedRoute requiredRole="manager"><ManagerDashboard /></ProtectedRoute>} />
       <Route path="/portal/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
+      <Route path="/portal/certificate/:certId" element={<ProtectedRoute><CertificatePrint /></ProtectedRoute>} />
       <Route path="/portal" element={<PortalRedirect />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

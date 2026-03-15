@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase, TABLES } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 
@@ -437,13 +437,15 @@ export default function ParticipantDashboard() {
               <div className="space-y-8">
                 {certificates.filter(c => c.status === 'issued').map(cert => (
                   <div key={cert.id}>
-                    {/* Print button */}
-                    <div className="flex justify-end mb-3">
-                      <button
-                        onClick={() => window.print()}
+                    {/* Download / Print button */}
+                    <div className="flex justify-end mb-3 gap-3">
+                      <Link
+                        to={`/portal/certificate/${cert.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition-colors flex items-center gap-2">
-                        🖨️ Print / Save as PDF
-                      </button>
+                        🖨️ Download / Print Certificate
+                      </Link>
                     </div>
 
                     {/* Certificate design */}
