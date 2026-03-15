@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { HashLink } from 'react-router-hash-link'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -23,7 +24,7 @@ export default function Navbar() {
             <Link to="/about" className={`text-sm transition-colors ${active('/about')}`}>About</Link>
             <Link to="/services" className={`text-sm transition-colors ${active('/services')}`}>Services</Link>
             <Link to="/case-studies" className={`text-sm transition-colors ${active('/case-studies')}`}>Case Studies</Link>
-            <Link to="/#pricing" className="text-sm text-white hover:text-yellow-300 transition-colors">Pricing</Link>
+            <HashLink smooth to="/#pricing" className="text-sm text-white hover:text-yellow-300 transition-colors">Pricing</HashLink>
             <Link to="/contact" className={`text-sm transition-colors ${active('/contact')}`}>Work With Us</Link>
             <Link to="/portal/login" className="bg-yellow-400 text-blue-900 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-yellow-300 transition-colors">
               Client Portal
@@ -45,6 +46,7 @@ export default function Navbar() {
             {[['/', 'Home'], ['/about', 'About'], ['/services', 'Services'], ['/case-studies', 'Case Studies'], ['/contact', 'Work With Us']].map(([path, label]) => (
               <Link key={path} to={path} onClick={() => setOpen(false)} className="block text-white hover:text-yellow-300 py-2 px-2 text-sm">{label}</Link>
             ))}
+            <HashLink smooth to="/#pricing" onClick={() => setOpen(false)} className="block text-white hover:text-yellow-300 py-2 px-2 text-sm">Pricing</HashLink>
             <Link to="/portal/login" onClick={() => setOpen(false)} className="block bg-yellow-400 text-blue-900 px-4 py-2 rounded-lg text-sm font-semibold text-center mt-2">Client Portal</Link>
           </div>
         )}
