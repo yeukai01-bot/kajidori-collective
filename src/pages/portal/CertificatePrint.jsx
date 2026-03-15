@@ -512,6 +512,257 @@ export default function CertificatePrint() {
           </div>
         </div>
       </div>
+
+        {/* ═══════════════════════════════════════════════════
+            BACK PAGE — Module Breakdown & Regulatory Refs
+        ═══════════════════════════════════════════════════ */}
+        <div
+          style={{
+            width: '297mm',
+            minHeight: '210mm',
+            maxWidth: '100%',
+            position: 'relative',
+            background: '#ffffff',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.4)',
+            overflow: 'hidden',
+            fontFamily: "'EB Garamond', Georgia, serif",
+            marginTop: '20px',
+          }}>
+
+          {/* Guilloche background */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: `url("${guillocheBg}")`,
+            backgroundRepeat: 'repeat-y',
+            backgroundSize: '100% auto',
+            zIndex: 0,
+          }} />
+
+          {/* Outer navy border */}
+          <div style={{ position: 'absolute', inset: '12mm', border: '2.5px solid #1e3a5f', zIndex: 3, pointerEvents: 'none' }} />
+          {/* Gold inner border */}
+          <div style={{ position: 'absolute', inset: '15mm', border: '1px solid #c9a227', zIndex: 3, pointerEvents: 'none' }} />
+
+          {/* Corner rosettes */}
+          {[
+            { top: '9mm', left: '9mm' },
+            { top: '9mm', right: '9mm' },
+            { bottom: '9mm', left: '9mm' },
+            { bottom: '9mm', right: '9mm' },
+          ].map((pos, i) => (
+            <div key={i} style={{ position: 'absolute', ...pos, width: '8mm', height: '8mm', zIndex: 4, pointerEvents: 'none' }}>
+              <svg viewBox="0 0 32 32" width="100%" height="100%">
+                <circle cx="16" cy="16" r="14" stroke="#1e3a5f" strokeWidth="1.5" fill="none"/>
+                <circle cx="16" cy="16" r="10" stroke="#c9a227" strokeWidth="0.8" fill="none"/>
+                <circle cx="16" cy="16" r="3" fill="#1e3a5f"/>
+                {[0,45,90,135,180,225,270,315].map(a => {
+                  const rad = (a * Math.PI) / 180
+                  return <line key={a}
+                    x1={16 + 5 * Math.cos(rad)} y1={16 + 5 * Math.sin(rad)}
+                    x2={16 + 12 * Math.cos(rad)} y2={16 + 12 * Math.sin(rad)}
+                    stroke="#1e3a5f" strokeWidth="0.8"/>
+                })}
+              </svg>
+            </div>
+          ))}
+
+          {/* Back page content */}
+          <div style={{
+            position: 'relative', zIndex: 5,
+            padding: '22mm 24mm 18mm',
+            minHeight: '210mm',
+            boxSizing: 'border-box',
+          }}>
+
+            {/* Header */}
+            <div style={{ textAlign: 'center', marginBottom: '5mm' }}>
+              <div style={{ fontSize: '8px', letterSpacing: '4px', textTransform: 'uppercase', color: '#94a3b8', fontFamily: 'Arial, sans-serif', marginBottom: '2mm' }}>
+                Certificate Ref: {refNumber} &nbsp;·&nbsp; {recipientName}
+              </div>
+              <div style={{ fontSize: '16px', fontWeight: '700', color: '#1e3a5f', fontFamily: "'Cinzel', serif", marginBottom: '1.5mm' }}>
+                Programme Content &amp; Regulatory Framework
+              </div>
+              <div style={{ fontSize: '10px', color: '#64748b', fontFamily: 'Arial, sans-serif', fontStyle: 'italic' }}>
+                Compliance to Excellence — Full-Day Workshop Programme
+              </div>
+              {/* Divider */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3mm' }}>
+                <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, #c9a227)' }} />
+                <div style={{ color: '#c9a227', fontSize: '12px' }}>✦</div>
+                <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, #c9a227, transparent)' }} />
+              </div>
+            </div>
+
+            {/* Module table */}
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9px', fontFamily: 'Arial, sans-serif' }}>
+              <thead>
+                <tr style={{ background: '#1e3a5f' }}>
+                  <th style={{ padding: '3mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '6%' }}>#</th>
+                  <th style={{ padding: '3mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '28%' }}>Module Title</th>
+                  <th style={{ padding: '3mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '10%' }}>Duration</th>
+                  <th style={{ padding: '3mm 3mm', color: '#c9a227', textAlign: 'left', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', width: '56%' }}>Regulatory &amp; CQC References</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  {
+                    num: '1',
+                    title: 'What Is Mental Health?',
+                    duration: '60 min',
+                    core: true,
+                    refs: [
+                      'CQC Key Question: Caring (KLOEs C1, C2)',
+                      'Mental Health Act 1983 (amended 2007) — Principles of care and treatment',
+                      'NHS Long Term Plan 2019 — Mental health workforce standards',
+                      'NICE Guideline NG222 — Mental health in adults: service user experience',
+                      'Health & Social Care Act 2008 (Regulated Activities) Regulations 2014 — Reg. 9 (Person-centred care)',
+                    ],
+                  },
+                  {
+                    num: '2',
+                    title: 'The Conditions We Work With',
+                    duration: '75 min',
+                    core: true,
+                    refs: [
+                      'CQC Key Question: Effective (KLOEs E1, E2)',
+                      'NICE Guideline CG90 — Depression in adults',
+                      'NICE Guideline CG178 — Psychosis and schizophrenia in adults',
+                      'DSM-5 / ICD-11 — Diagnostic classifications',
+                      'Health & Social Care Act 2008 Reg. 12 — Safe care and treatment',
+                    ],
+                  },
+                  {
+                    num: '3',
+                    title: 'Safeguarding & Whistleblowing',
+                    duration: '45 min',
+                    core: true,
+                    refs: [
+                      'CQC Key Question: Safe (KLOEs S1, S3)',
+                      'Care Act 2014 — Sections 42–47: Safeguarding adults at risk',
+                      'Health & Social Care Act 2008 Reg. 13 — Safeguarding service users from abuse',
+                      'Public Interest Disclosure Act 1998 (Whistleblowing)',
+                      'Local Authority Safeguarding Adults Board (LSAB) procedures',
+                    ],
+                  },
+                  {
+                    num: '4',
+                    title: 'The Art of Active Support',
+                    duration: '75 min',
+                    core: true,
+                    refs: [
+                      'CQC Key Question: Responsive (KLOEs R1, R2)',
+                      'Mental Capacity Act 2005 — Principles of supported decision-making',
+                      'Health & Social Care Act 2008 Reg. 9 — Person-centred care',
+                      'Positive Behaviour Support (PBS) Framework — NHS England 2015',
+                      'Human Rights Act 1998 — Article 8: Right to private and family life',
+                    ],
+                  },
+                  {
+                    num: '5',
+                    title: 'Evidencing Your Work — Writing Notes That Matter',
+                    duration: '30 min',
+                    core: true,
+                    refs: [
+                      'CQC Key Question: Well-led (KLOEs W1, W2)',
+                      'Health & Social Care Act 2008 Reg. 17 — Good governance',
+                      'Data Protection Act 2018 / UK GDPR — Accurate and lawful record keeping',
+                      'NMC / Skills for Care — Professional standards for documentation',
+                      'CQC Inspection Framework — Evidence of outcomes in care records',
+                    ],
+                  },
+                  {
+                    num: '6',
+                    title: 'Reflection, Commitment & Close',
+                    duration: '30 min',
+                    core: true,
+                    refs: [
+                      'CQC Key Question: Well-led (KLOE W3)',
+                      'Health & Social Care Act 2008 Reg. 18 — Staffing (competency & development)',
+                      'Skills for Care — Continuing Professional Development (CPD) standards',
+                      'Care Certificate Standard 2 — Your personal development',
+                      'Francis Report 2013 — Culture of learning and accountability',
+                    ],
+                  },
+                  {
+                    num: '7',
+                    title: 'Medication Management',
+                    duration: '60 min',
+                    core: false,
+                    refs: [
+                      'CQC Key Question: Safe (KLOE S2)',
+                      'Health & Social Care Act 2008 Reg. 12 — Safe care and treatment (medicines)',
+                      'NICE Guideline NG67 — Medicines optimisation',
+                      'Medicines Act 1968 — Legal framework for medicines administration',
+                      'Skills for Care — Medication management competency framework',
+                    ],
+                  },
+                  {
+                    num: '8',
+                    title: 'Positive Behaviour Support',
+                    duration: '60 min',
+                    core: false,
+                    refs: [
+                      'CQC Key Question: Safe & Effective (KLOEs S1, E1)',
+                      'Mental Health Units (Use of Force) Act 2018',
+                      'Health & Social Care Act 2008 Reg. 13 — Safeguarding from abuse and improper treatment',
+                      'PBS Competence Framework — BILD/NHS England 2015',
+                      'Restraint Reduction Network (RRN) Training Standards 2019',
+                    ],
+                  },
+                ].map((mod, idx) => (
+                  <tr key={mod.num} style={{ background: idx % 2 === 0 ? 'rgba(30,58,95,0.03)' : 'white', verticalAlign: 'top' }}>
+                    <td style={{ padding: '2.5mm 3mm', borderBottom: '0.5px solid rgba(30,58,95,0.1)' }}>
+                      <div style={{
+                        width: '6mm', height: '6mm', borderRadius: '50%',
+                        background: mod.core ? '#1e3a5f' : '#64748b',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: 'white', fontWeight: '700', fontSize: '8px',
+                      }}>{mod.num}</div>
+                    </td>
+                    <td style={{ padding: '2.5mm 3mm', borderBottom: '0.5px solid rgba(30,58,95,0.1)' }}>
+                      <div style={{ fontWeight: '700', color: '#1e3a5f', fontSize: '9.5px', marginBottom: '0.5mm' }}>{mod.title}</div>
+                      <div style={{ fontSize: '7.5px', color: mod.core ? '#059669' : '#64748b' }}>
+                        {mod.core ? '● Core Module' : '○ Optional Module'}
+                      </div>
+                    </td>
+                    <td style={{ padding: '2.5mm 3mm', borderBottom: '0.5px solid rgba(30,58,95,0.1)', color: '#475569', whiteSpace: 'nowrap' }}>
+                      {mod.duration}
+                    </td>
+                    <td style={{ padding: '2.5mm 3mm', borderBottom: '0.5px solid rgba(30,58,95,0.1)' }}>
+                      {mod.refs.map((ref, ri) => (
+                        <div key={ri} style={{ color: '#374151', fontSize: '8.5px', lineHeight: 1.5, marginBottom: ri < mod.refs.length - 1 ? '0.5mm' : 0 }}>
+                          <span style={{ color: '#c9a227', marginRight: '1.5mm' }}>▸</span>{ref}
+                        </div>
+                      ))}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Footer */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: '4mm 0 3mm' }}>
+              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, #1e3a5f)' }} />
+              <div style={{ color: '#1e3a5f', fontSize: '10px' }}>◆</div>
+              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, #1e3a5f, transparent)' }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              <div style={{ fontSize: '7.5px', color: '#94a3b8', fontFamily: 'Arial, sans-serif', maxWidth: '160mm', lineHeight: 1.6 }}>
+                This programme is designed and delivered by The Kajidori Collective in accordance with CQC Fundamental Standards
+                (Health &amp; Social Care Act 2008, Regulated Activities Regulations 2014), Skills for Care workforce development standards,
+                and the Care Certificate. All modules are reviewed annually to reflect current legislation and best practice guidance.
+                <strong style={{ color: '#92400e' }}> Annual renewal required — valid until: {renewalDate}.</strong>
+              </div>
+              <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                <div style={{ fontSize: '7px', color: '#94a3b8', fontFamily: 'Arial, sans-serif', letterSpacing: '1px', textTransform: 'uppercase' }}>Certificate Ref</div>
+                <div style={{ fontSize: '9px', fontWeight: '700', color: '#1e3a5f', fontFamily: 'Arial, sans-serif' }}>{refNumber}</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+    </div>
     </>
   )
 }
