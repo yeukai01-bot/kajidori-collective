@@ -56,13 +56,31 @@ export default function ManagerDashboard() {
     const progList = p || []
     setProgrammes(progList)
 
-    // Load team members (same organisation, participants only)
+    // Load team members — STRICT org isolation for data protection
+    // Only show participants from the manager's own organisation
     const orgId = profile?.organisation_id
-    let teamQuery = supabase.from(TABLES.USERS).select('*').eq('role', 'participant')
-    if (orgId) teamQuery = teamQuery.eq('organisation_id', orgId)
-    const { data: team, error: teamErr } = await teamQuery.order('last_name')
-    if (teamErr) console.error('Team query error:', teamErr)
-    const teamList = team || []
+    let teamList = []
+    if (orgId) {
+      const { data: team, error: teamErr } = await supabase
+        .from(TABLES.USERS)
+        .select('*')
+        .eq('role', 'participant')
+        .eq('organisation_id', orgId)
+        .order('last_name')
+      if (teamErr) console.error('Team query error:', teamErr)
+      teamList = team || []
+    }
+    // Also include managers from same org (for compliance tracking)
+    if (orgId) {
+      const { data: mgrs } = await supabase
+        .from(TABLES.USERS)
+        .select('*')
+        .eq('role', 'manager')
+        .eq('organisation_id', orgId)
+        .neq('id', user.id) // exclude self
+        .order('last_name')
+      teamList = [...teamList, ...(mgrs || [])]
+    }
     setTeamMembers(teamList)
 
     // Load all attendance for team

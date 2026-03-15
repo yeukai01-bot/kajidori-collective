@@ -20,6 +20,7 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
   const [issuingCert, setIssuingCert] = useState(null)
+  const [selectedOrg, setSelectedOrg] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => { if (user) loadData() }, [user])
@@ -305,10 +306,136 @@ export default function AdminDashboard() {
                   Add Organisation
                 </button>
               </div>
+            ) : selectedOrg ? (
+              // ORG DRILL-DOWN VIEW
+              <div>
+                <button onClick={() => setSelectedOrg(null)}
+                  className="flex items-center gap-2 text-blue-700 hover:text-blue-900 text-sm font-medium mb-6">
+                  ← Back to all organisations
+                </button>
+                <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+                  <div className="bg-blue-900 text-white px-6 py-5">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h2 className="text-xl font-bold">{selectedOrg.name}</h2>
+                        {selectedOrg.type && <p className="text-blue-300 text-sm mt-1">{selectedOrg.type.replace(/_/g, ' ')}</p>}
+                      </div>
+                      <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
+                        selectedOrg.status === 'active' ? 'bg-green-400 text-green-900' : 'bg-slate-400 text-white'
+                      }`}>{selectedOrg.status || 'active'}</span>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
+                      {selectedOrg.contact_name && <div><span className="text-blue-300">Contact</span><div className="font-medium">{selectedOrg.contact_name}</div></div>}
+                      {selectedOrg.contact_email && <div><span className="text-blue-300">Email</span><div className="font-medium">{selectedOrg.contact_email}</div></div>}
+                      {selectedOrg.contact_phone && <div><span className="text-blue-300">Phone</span><div className="font-medium">{selectedOrg.contact_phone}</div></div>}
+                      {selectedOrg.staff_count && <div><span className="text-blue-300">Staff</span><div className="font-medium">{selectedOrg.staff_count}</div></div>}
+                    </div>
+                  </div>
+
+                  {/* Email org contact */}
+                  {selectedOrg.contact_email && (
+                    <div className="px-6 py-3 bg-blue-50 border-b border-slate-100 flex items-center justify-between">
+                      <span className="text-sm text-slate-600">Organisation contact: <strong>{selectedOrg.contact_name || selectedOrg.contact_email}</strong></span>
+                      <a href={`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(selectedOrg.contact_email)}&su=${encodeURIComponent(`Training Update — ${selectedOrg.name}`)}&body=${encodeURIComponent(`Dear ${selectedOrg.contact_name || 'Team'},\n\nI hope this message finds you well. I am writing to provide an update on the training progress for your team at ${selectedOrg.name}.\n\nPlease find the latest compliance summary below.\n\nKind regards,\nYeukai Kajidori\nThe Kajidori Collective`)}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="bg-blue-900 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-blue-800 transition-colors flex items-center gap-2">
+                        ✉️ Email Organisation
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Members table */}
+                  <div className="p-6">
+                    <h3 className="font-bold text-slate-800 mb-4">Team Members & Training Compliance</h3>
+                    {(() => {
+                      const orgUsers = users.filter(u => u.organisation_id === selectedOrg.id)
+                      if (orgUsers.length === 0) return (
+                        <div className="text-center py-8 text-slate-400">
+                          <div className="text-3xl mb-2">👥</div>
+                          <p className="text-sm">No team members registered for this organisation yet.</p>
+                        </div>
+                      )
+                      return (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="bg-slate-50 border-b border-slate-100">
+                                <th className="text-left px-4 py-3 font-semibold text-slate-700">Name</th>
+                                <th className="text-left px-4 py-3 font-semibold text-slate-700">Role</th>
+                                <th className="text-left px-4 py-3 font-semibold text-slate-700">Workshop</th>
+                                <th className="text-left px-4 py-3 font-semibold text-slate-700">Mentoring</th>
+                                <th className="text-left px-4 py-3 font-semibold text-slate-700">Certificate</th>
+                                <th className="text-left px-4 py-3 font-semibold text-slate-700">Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {orgUsers.map(u => {
+                                const userAtt = attendance.filter(a => a.user_id === u.id)
+                                const workshopDays = userAtt.filter(a => a.session_name?.startsWith('WORKSHOP:')).length
+                                const mentoringDone = userAtt.filter(a => a.session_name?.startsWith('MENTORING:')).length
+                                const hasCert = certificates.some(c => c.user_id === u.id && c.status === 'issued')
+                                const isComplete = workshopDays > 0 && mentoringDone >= 10
+                                const needsNudge = !isComplete
+                                const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.email
+                                const nudgeBody = `Dear ${u.first_name || 'Team Member'},\n\nI hope you are well. I wanted to reach out regarding your training progress on the Compliance to Excellence programme.\n\n${workshopDays === 0 ? 'You have not yet attended the full-day workshop. ' : `You attended ${workshopDays} workshop day(s). `}${mentoringDone < 10 ? `You have completed ${mentoringDone} of 10 mentoring sessions. ` : 'You have completed all 10 mentoring sessions. '}\n\nPlease make yourself available to complete the remaining sessions at your earliest convenience.\n\nKind regards,\nYeukai Kajidori\nThe Kajidori Collective`
+                                return (
+                                  <tr key={u.id} className="border-b border-slate-50 hover:bg-slate-50">
+                                    <td className="px-4 py-3">
+                                      <div className="font-medium text-slate-800">{fullName}</div>
+                                      <div className="text-xs text-slate-400">{u.email}</div>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                                        u.role === 'manager' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'
+                                      }`}>{u.role}</span>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                      <span className={workshopDays > 0 ? 'text-green-600 font-semibold' : 'text-slate-400'}>
+                                        {workshopDays > 0 ? `✅ ${workshopDays} day${workshopDays !== 1 ? 's' : ''}` : '⏳ Not attended'}
+                                      </span>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                      <span className={mentoringDone >= 10 ? 'text-green-600 font-semibold' : mentoringDone > 0 ? 'text-amber-600 font-semibold' : 'text-slate-400'}>
+                                        {mentoringDone}/10
+                                      </span>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                      {hasCert
+                                        ? <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-semibold">🏆 Issued</span>
+                                        : <span className="text-xs text-slate-400">Not issued</span>}
+                                    </td>
+                                    <td className="px-4 py-3">
+                                      {needsNudge && u.email && (
+                                        <a href={`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(u.email)}&su=${encodeURIComponent('Training Reminder — Compliance to Excellence')}&body=${encodeURIComponent(nudgeBody)}`}
+                                          target="_blank" rel="noopener noreferrer"
+                                          className="text-xs bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg font-semibold hover:bg-amber-200 transition-colors whitespace-nowrap">
+                                          📧 Send Reminder
+                                        </a>
+                                      )}
+                                      {!needsNudge && (
+                                        <span className="text-xs text-green-600 font-medium">✅ Complete</span>
+                                      )}
+                                    </td>
+                                  </tr>
+                                )
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )
+                    })()}
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="grid md:grid-cols-2 gap-4">
-                {orgs.map(org => (
-                  <div key={org.id} className="bg-white rounded-xl p-5 border border-slate-100 shadow-sm">
+                {orgs.map(org => {
+                  const orgUserCount = users.filter(u => u.organisation_id === org.id).length
+                  const orgCertCount = certificates.filter(c => users.find(u => u.id === c.user_id && u.organisation_id === org.id) && c.status === 'issued').length
+                  return (
+                  <div key={org.id}
+                    onClick={() => setSelectedOrg(org)}
+                    className="bg-white rounded-xl p-5 border border-slate-100 shadow-sm cursor-pointer hover:border-blue-300 hover:shadow-md transition-all">
                     <div className="flex items-start justify-between mb-3">
                       <h3 className="font-bold text-blue-900">{org.name}</h3>
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${
@@ -316,7 +443,7 @@ export default function AdminDashboard() {
                       }`}>{org.status || 'active'}</span>
                     </div>
                     <div className="space-y-1 text-sm text-slate-500">
-                      {org.type && <div>Type: {org.type.replace('_', ' ')}</div>}
+                      {org.type && <div>Type: {org.type.replace(/_/g, ' ')}</div>}
                       {org.contact_name && <div>Contact: {org.contact_name}</div>}
                       {org.contact_email && <div>Email: {org.contact_email}</div>}
                       {org.staff_count && <div>Staff: {org.staff_count}</div>}
@@ -324,11 +451,14 @@ export default function AdminDashboard() {
                         <div>Contract from: {new Date(org.contract_start_date).toLocaleDateString('en-GB')}</div>
                       )}
                     </div>
-                    <div className="mt-3 text-xs text-slate-400">
-                      {users.filter(u => u.organisation_id === org.id).length} users
+                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                      <span className="text-slate-500">{orgUserCount} registered user{orgUserCount !== 1 ? 's' : ''}</span>
+                      {orgCertCount > 0 && <span className="text-yellow-700 font-semibold">🏆 {orgCertCount} certificate{orgCertCount !== 1 ? 's' : ''} issued</span>}
+                      <span className="text-blue-600 font-semibold">View details →</span>
                     </div>
                   </div>
-                ))}
+                  )
+                })}
               </div>
             )}
 
