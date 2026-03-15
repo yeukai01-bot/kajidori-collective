@@ -63,18 +63,23 @@ export default function Contact() {
     setError('')
 
     try {
-      // Save to Supabase enquiries table (fallback to console if table doesn't exist)
       const { error: dbError } = await supabase
-        .from('enquiries')
-        .insert([{ service_type: tab, form_data: form, submitted_at: new Date().toISOString() }])
-
-      // Even if DB save fails (table may not exist), show success
-      if (dbError) console.warn('DB save failed (may be expected):', dbError.message)
-
+        .from('enquiries_kajidori')
+        .insert([{
+          service_type: tab,
+          full_name: form.fullName || '',
+          email: form.email || '',
+          phone: form.phone || null,
+          organisation: form.organisation || null,
+          role_title: form.jobTitle || null,
+          message: form.challenge || form.goals || form.message || null,
+          staff_count: form.staffCount ? String(form.staffCount) : null,
+          status: 'new',
+        }])
+      if (dbError) console.warn('DB save failed:', dbError.message)
       setSuccess(true)
       setForm({})
     } catch (err) {
-      // Still show success — Netlify Forms will capture it
       setSuccess(true)
       setForm({})
     } finally {

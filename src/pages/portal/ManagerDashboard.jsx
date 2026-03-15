@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { supabase, TABLES } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 
-const TABS = ['Overview', 'My Training', 'Team Compliance', 'Attendance', 'Reports']
+const TABS = ['Overview', 'My Training', 'Team Compliance', 'Attendance', 'Reports', 'Feedback', 'Leave a Review']
 
 // All 8 workshop sessions — 6 core + 2 optional
 const WORKSHOP_SESSIONS = [
@@ -40,6 +40,14 @@ export default function ManagerDashboard() {
   const [mentoringSignOffWeek, setMentoringSignOffWeek] = useState(null)
   const [mentoringMsg, setMentoringMsg] = useState('')
   const [mentoringLoading, setMentoringLoading] = useState(false)
+  // Feedback state
+  const [feedbackForm, setFeedbackForm] = useState({ overall_rating: 5, content_rating: 5, delivery_rating: 5, would_recommend: true, most_useful: '', improvements: '', additional_comments: '' })
+  const [feedbackSubmitting, setFeedbackSubmitting] = useState(false)
+  const [feedbackDone, setFeedbackDone] = useState(false)
+  // Review state
+  const [reviewForm, setReviewForm] = useState({ rating: 5, headline: '', review_text: '', service_type: 'training' })
+  const [reviewSubmitting, setReviewSubmitting] = useState(false)
+  const [reviewDone, setReviewDone] = useState(false)
 
   const displayName = profile
     ? [profile.first_name, profile.last_name].filter(Boolean).join(' ') || profile.email
@@ -836,6 +844,127 @@ export default function ManagerDashboard() {
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* FEEDBACK TAB */}
+        {tab === 'Feedback' && (
+          <div className="max-w-2xl">
+            <h2 className="text-2xl font-bold text-blue-900 mb-2">Leave Feedback</h2>
+            <p className="text-slate-500 text-sm mb-6">Your feedback helps us improve the training. All responses go directly to Yeukai at The Kajidori Collective.</p>
+            {feedbackDone ? (
+              <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
+                <div className="text-4xl mb-3">🙏</div>
+                <h3 className="font-bold text-green-800 mb-2">Thank you for your feedback!</h3>
+                <p className="text-green-700 text-sm">Your response has been received and will help shape future training.</p>
+              </div>
+            ) : (
+              <form onSubmit={async (e) => {
+                e.preventDefault(); setFeedbackSubmitting(true)
+                const { error } = await supabase.from('feedback_kajidori').insert([{
+                  user_name: [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || user?.email,
+                  user_role: 'manager',
+                  organisation: profile?.organisations_1741860000000?.name || null,
+                  overall_rating: feedbackForm.overall_rating,
+                  content_rating: feedbackForm.content_rating,
+                  delivery_rating: feedbackForm.delivery_rating,
+                  would_recommend: feedbackForm.would_recommend,
+                  most_useful: feedbackForm.most_useful || null,
+                  improvements: feedbackForm.improvements || null,
+                  additional_comments: feedbackForm.additional_comments || null,
+                }])
+                setFeedbackSubmitting(false)
+                if (!error) setFeedbackDone(true)
+              }} className="bg-white rounded-xl border border-slate-100 shadow-sm p-6 space-y-5">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Overall Rating</label>
+                  <div className="flex gap-2">{[1,2,3,4,5].map(s => <button key={s} type="button" onClick={() => setFeedbackForm(f => ({...f, overall_rating: s}))} className={`text-2xl ${s <= feedbackForm.overall_rating ? 'text-yellow-400' : 'text-slate-200'}`}>★</button>)}</div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Content Quality</label>
+                    <div className="flex gap-1">{[1,2,3,4,5].map(s => <button key={s} type="button" onClick={() => setFeedbackForm(f => ({...f, content_rating: s}))} className={`text-xl ${s <= feedbackForm.content_rating ? 'text-yellow-400' : 'text-slate-200'}`}>★</button>)}</div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Delivery Quality</label>
+                    <div className="flex gap-1">{[1,2,3,4,5].map(s => <button key={s} type="button" onClick={() => setFeedbackForm(f => ({...f, delivery_rating: s}))} className={`text-xl ${s <= feedbackForm.delivery_rating ? 'text-yellow-400' : 'text-slate-200'}`}>★</button>)}</div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Would you recommend this training?</label>
+                  <div className="flex gap-3">
+                    <button type="button" onClick={() => setFeedbackForm(f => ({...f, would_recommend: true}))} className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${feedbackForm.would_recommend ? 'bg-green-600 text-white border-green-600' : 'bg-white text-slate-600 border-slate-200'}`}>✅ Yes</button>
+                    <button type="button" onClick={() => setFeedbackForm(f => ({...f, would_recommend: false}))} className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${!feedbackForm.would_recommend ? 'bg-red-500 text-white border-red-500' : 'bg-white text-slate-600 border-slate-200'}`}>❌ No</button>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">What did you find most useful?</label>
+                  <textarea value={feedbackForm.most_useful} onChange={e => setFeedbackForm(f => ({...f, most_useful: e.target.value}))} rows={3} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="e.g. The safeguarding module, the group discussions..." />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">How could we improve?</label>
+                  <textarea value={feedbackForm.improvements} onChange={e => setFeedbackForm(f => ({...f, improvements: e.target.value}))} rows={3} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Any suggestions for improvement..." />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Any other comments?</label>
+                  <textarea value={feedbackForm.additional_comments} onChange={e => setFeedbackForm(f => ({...f, additional_comments: e.target.value}))} rows={3} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Anything else you'd like to share..." />
+                </div>
+                <button type="submit" disabled={feedbackSubmitting} className="w-full bg-blue-900 text-white py-3 rounded-lg font-bold text-sm hover:bg-blue-800 transition-colors disabled:opacity-50">{feedbackSubmitting ? 'Submitting...' : 'Submit Feedback'}</button>
+              </form>
+            )}
+          </div>
+        )}
+
+        {/* LEAVE A REVIEW TAB */}
+        {tab === 'Leave a Review' && (
+          <div className="max-w-2xl">
+            <h2 className="text-2xl font-bold text-blue-900 mb-2">Leave a Review</h2>
+            <p className="text-slate-500 text-sm mb-6">Share your experience to help others. Approved reviews may be featured on our website as testimonials.</p>
+            {reviewDone ? (
+              <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
+                <div className="text-4xl mb-3">⭐</div>
+                <h3 className="font-bold text-green-800 mb-2">Thank you for your review!</h3>
+                <p className="text-green-700 text-sm">Your review has been submitted and will appear on our website once approved by Yeukai.</p>
+              </div>
+            ) : (
+              <form onSubmit={async (e) => {
+                e.preventDefault(); setReviewSubmitting(true)
+                const { error } = await supabase.from('reviews_kajidori').insert([{
+                  reviewer_name: [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || user?.email,
+                  reviewer_role: 'manager',
+                  organisation: profile?.organisations_1741860000000?.name || null,
+                  service_type: reviewForm.service_type,
+                  rating: reviewForm.rating,
+                  headline: reviewForm.headline || null,
+                  review_text: reviewForm.review_text,
+                  approved: false,
+                }])
+                setReviewSubmitting(false)
+                if (!error) setReviewDone(true)
+              }} className="bg-white rounded-xl border border-slate-100 shadow-sm p-6 space-y-5">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Which service are you reviewing?</label>
+                  <div className="flex flex-wrap gap-2">
+                    {[{id:'training',label:'🧠 Mental Health Training'},{id:'consulting',label:'🏛️ Strategic Consulting'},{id:'mentoring',label:'🎯 Leadership Mentoring'}].map(s => (
+                      <button key={s.id} type="button" onClick={() => setReviewForm(f => ({...f, service_type: s.id}))} className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${reviewForm.service_type === s.id ? 'bg-blue-900 text-white border-blue-900' : 'bg-white text-slate-600 border-slate-200'}`}>{s.label}</button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Your Rating</label>
+                  <div className="flex gap-2">{[1,2,3,4,5].map(s => <button key={s} type="button" onClick={() => setReviewForm(f => ({...f, rating: s}))} className={`text-3xl ${s <= reviewForm.rating ? 'text-yellow-400' : 'text-slate-200'}`}>★</button>)}</div>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Review Headline <span className="text-red-500">*</span></label>
+                  <input required value={reviewForm.headline} onChange={e => setReviewForm(f => ({...f, headline: e.target.value}))} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Transformative training that changed how I work" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Your Review <span className="text-red-500">*</span></label>
+                  <textarea required value={reviewForm.review_text} onChange={e => setReviewForm(f => ({...f, review_text: e.target.value}))} rows={5} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Share your experience in detail — what you learned, how it helped you, what stood out..." />
+                </div>
+                <button type="submit" disabled={reviewSubmitting} className="w-full bg-yellow-400 text-blue-900 py-3 rounded-lg font-bold text-sm hover:bg-yellow-300 transition-colors disabled:opacity-50">{reviewSubmitting ? 'Submitting...' : '⭐ Submit Review'}</button>
+              </form>
+            )}
           </div>
         )}
 

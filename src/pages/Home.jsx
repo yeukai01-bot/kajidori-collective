@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
 
 const PHOTO_SEATED = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663231528991/iICOqSmlpYSarXZX.jpeg'
 const PHOTO_SMILING = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663231528991/jPaHykWfLrMYEDWA.jpeg'
@@ -43,6 +45,12 @@ const credentials = [
 ]
 
 export default function Home() {
+  const [approvedReviews, setApprovedReviews] = useState([])
+  useEffect(() => {
+    supabase.from('reviews_kajidori').select('*').eq('approved', true).order('approved_at', { ascending: false }).limit(6)
+      .then(({ data }) => setApprovedReviews(data || []))
+  }, [])
+
   return (
     <div className="overflow-x-hidden">
 
@@ -209,6 +217,42 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── TESTIMONIALS ─────────────────────────────────────────────────── */}
+      {approvedReviews.length > 0 && (
+        <section className="py-20 px-4 bg-slate-50">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <p className="text-yellow-500 font-bold text-xs uppercase tracking-[0.2em] mb-3">What People Say</p>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-blue-900">Voices From Our Community</h2>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {approvedReviews.map(rev => (
+                <div key={rev.id} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col">
+                  <div className="flex gap-1 mb-3">
+                    {[1,2,3,4,5].map(s => <span key={s} className={s <= (rev.rating || 5) ? 'text-yellow-400 text-lg' : 'text-slate-200 text-lg'}>{String.fromCharCode(9733)}</span>)}
+                  </div>
+                  {rev.headline && <h3 className="font-bold text-blue-900 mb-2 text-sm">&ldquo;{rev.headline}&rdquo;</h3>}
+                  <p className="text-slate-600 text-sm leading-relaxed flex-1 mb-4">{rev.review_text}</p>
+                  <div className="border-t border-slate-100 pt-3">
+                    <div className="font-semibold text-slate-800 text-sm">{rev.reviewer_name}</div>
+                    <div className="text-xs text-slate-500">{rev.reviewer_role ? rev.reviewer_role.charAt(0).toUpperCase() + rev.reviewer_role.slice(1) : ''}{rev.organisation ? ` · ${rev.organisation}` : ''}</div>
+                    <div className="mt-1">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                        rev.service_type === 'consulting' ? 'bg-purple-100 text-purple-700' :
+                        rev.service_type === 'training' ? 'bg-blue-100 text-blue-700' :
+                        'bg-green-100 text-green-700'
+                      }`}>
+                        {rev.service_type === 'consulting' ? 'Strategic Consulting' : rev.service_type === 'training' ? 'Mental Health Training' : 'Leadership Mentoring'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
       <section className="py-24 px-4 bg-white">

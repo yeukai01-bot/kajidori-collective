@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase, TABLES } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 
-const TABS = ['Overview', 'Organisations', 'Users', 'Programmes', 'Certificates', 'Settings']
+const TABS = ['Overview', 'Organisations', 'Users', 'Programmes', 'Certificates', 'Enquiries', 'Feedback', 'Reviews', 'Settings']
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState('Overview')
@@ -21,6 +21,10 @@ export default function AdminDashboard() {
   const [msg, setMsg] = useState('')
   const [issuingCert, setIssuingCert] = useState(null)
   const [selectedOrg, setSelectedOrg] = useState(null)
+  const [enquiries, setEnquiries] = useState([])
+  const [feedbackList, setFeedbackList] = useState([])
+  const [reviews, setReviews] = useState([])
+  const [expandedEnquiry, setExpandedEnquiry] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => { if (user) loadData() }, [user])
@@ -41,6 +45,15 @@ export default function AdminDashboard() {
     setCertificates(c || [])
     setAttendance(a || [])
     setMentoring(m || [])
+    // Load enquiries, feedback, reviews
+    const [{ data: enq }, { data: fb }, { data: rev }] = await Promise.all([
+      supabase.from('enquiries_kajidori').select('*').order('submitted_at', { ascending: false }),
+      supabase.from('feedback_kajidori').select('*').order('submitted_at', { ascending: false }),
+      supabase.from('reviews_kajidori').select('*').order('submitted_at', { ascending: false }),
+    ])
+    setEnquiries(enq || [])
+    setFeedbackList(fb || [])
+    setReviews(rev || [])
     setLoading(false)
   }
 
@@ -791,6 +804,193 @@ export default function AdminDashboard() {
                     </div>
                   )
                 })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ENQUIRIES TAB */}
+        {tab === 'Enquiries' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-blue-900">Work With Us Enquiries</h2>
+                <p className="text-slate-500 text-sm mt-1">{enquiries.length} total · {enquiries.filter(e => e.status === 'new').length} new</p>
+              </div>
+            </div>
+            {enquiries.length === 0 ? (
+              <div className="bg-white rounded-xl p-12 border border-slate-100 text-center">
+                <div className="text-5xl mb-4">📬</div>
+                <h3 className="font-semibold text-slate-700 mb-2">No enquiries yet</h3>
+                <p className="text-slate-500 text-sm">Enquiries submitted via the Work With Us page will appear here.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {enquiries.map(enq => (
+                  <div key={enq.id} className={`bg-white rounded-xl border shadow-sm overflow-hidden ${enq.status === 'new' ? 'border-blue-200' : 'border-slate-100'}`}>
+                    <div className="flex items-center justify-between px-5 py-4 cursor-pointer" onClick={() => setExpandedEnquiry(expandedEnquiry === enq.id ? null : enq.id)}>
+                      <div className="flex items-center gap-3">
+                        {enq.status === 'new' && <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>}
+                        <div>
+                          <div className="font-semibold text-slate-800">{enq.full_name}</div>
+                          <div className="text-xs text-slate-500">{enq.email} · {enq.organisation || 'No organisation'}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                          enq.service_type === 'consulting' ? 'bg-purple-100 text-purple-700' :
+                          enq.service_type === 'training' ? 'bg-blue-100 text-blue-700' :
+                          'bg-green-100 text-green-700'
+                        }`}>
+                          {enq.service_type === 'consulting' ? '🏛️ Consulting' : enq.service_type === 'training' ? '🧠 Training' : '🎯 Mentoring'}
+                        </span>
+                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                          enq.status === 'new' ? 'bg-yellow-100 text-yellow-700' :
+                          enq.status === 'contacted' ? 'bg-blue-100 text-blue-700' :
+                          'bg-green-100 text-green-700'
+                        }`}>{enq.status}</span>
+                        <span className="text-slate-400 text-xs">{new Date(enq.submitted_at).toLocaleDateString('en-GB')}</span>
+                        <span className="text-slate-400">{expandedEnquiry === enq.id ? '▲' : '▼'}</span>
+                      </div>
+                    </div>
+                    {expandedEnquiry === enq.id && (
+                      <div className="border-t border-slate-100 px-5 py-4 bg-slate-50">
+                        <div className="grid md:grid-cols-2 gap-4 mb-4 text-sm">
+                          <div><span className="text-slate-500">Phone:</span> <span className="font-medium">{enq.phone || '—'}</span></div>
+                          <div><span className="text-slate-500">Staff Count:</span> <span className="font-medium">{enq.staff_count || '—'}</span></div>
+                          <div><span className="text-slate-500">Role:</span> <span className="font-medium">{enq.role_title || '—'}</span></div>
+                          <div><span className="text-slate-500">Submitted:</span> <span className="font-medium">{new Date(enq.submitted_at).toLocaleString('en-GB')}</span></div>
+                        </div>
+                        {enq.message && (
+                          <div className="mb-4">
+                            <div className="text-slate-500 text-sm mb-1">Message:</div>
+                            <div className="bg-white border border-slate-200 rounded-lg p-3 text-sm text-slate-700">{enq.message}</div>
+                          </div>
+                        )}
+                        <div className="flex flex-wrap gap-2">
+                          <a href={`mailto:${enq.email}?subject=Re: Your ${enq.service_type} enquiry to The Kajidori Collective&body=Dear ${enq.full_name},%0D%0A%0D%0AThank you for your enquiry regarding our ${enq.service_type} services.%0D%0A%0D%0A`}
+                            className="bg-blue-900 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-blue-800 transition-colors">✉️ Reply by Email</a>
+                          {enq.status !== 'contacted' && (
+                            <button onClick={async () => { await supabase.from('enquiries_kajidori').update({ status: 'contacted' }).eq('id', enq.id); loadData() }}
+                              className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-xs font-semibold hover:bg-slate-200 transition-colors">Mark as Contacted</button>
+                          )}
+                          {enq.status !== 'converted' && (
+                            <button onClick={async () => { await supabase.from('enquiries_kajidori').update({ status: 'converted' }).eq('id', enq.id); loadData() }}
+                              className="bg-green-100 text-green-700 px-4 py-2 rounded-lg text-xs font-semibold hover:bg-green-200 transition-colors">Mark as Converted</button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* FEEDBACK TAB */}
+        {tab === 'Feedback' && (
+          <div>
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-blue-900">Training Feedback</h2>
+              <p className="text-slate-500 text-sm mt-1">{feedbackList.length} responses received</p>
+            </div>
+            {feedbackList.length === 0 ? (
+              <div className="bg-white rounded-xl p-12 border border-slate-100 text-center">
+                <div className="text-5xl mb-4">💬</div>
+                <h3 className="font-semibold text-slate-700 mb-2">No feedback yet</h3>
+                <p className="text-slate-500 text-sm">Feedback submitted by participants and managers will appear here.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {feedbackList.map(fb => (
+                  <div key={fb.id} className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <div className="font-semibold text-slate-800">{fb.user_name || 'Anonymous'}</div>
+                        <div className="text-xs text-slate-500">{fb.user_role || 'Unknown role'} · {fb.organisation || 'No org'} · {new Date(fb.submitted_at).toLocaleDateString('en-GB')}</div>
+                      </div>
+                      <div className="flex gap-1">
+                        {[1,2,3,4,5].map(s => <span key={s} className={s <= (fb.overall_rating || 0) ? 'text-yellow-400' : 'text-slate-200'}>★</span>)}
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-3 mb-3 text-sm">
+                      <div className="bg-slate-50 rounded-lg p-3">
+                        <div className="text-xs text-slate-500 mb-1">Content Rating</div>
+                        <div className="font-medium">{fb.content_rating ? `${fb.content_rating}/5` : '—'}</div>
+                      </div>
+                      <div className="bg-slate-50 rounded-lg p-3">
+                        <div className="text-xs text-slate-500 mb-1">Delivery Rating</div>
+                        <div className="font-medium">{fb.delivery_rating ? `${fb.delivery_rating}/5` : '—'}</div>
+                      </div>
+                      <div className="bg-slate-50 rounded-lg p-3">
+                        <div className="text-xs text-slate-500 mb-1">Would Recommend</div>
+                        <div className="font-medium">{fb.would_recommend === true ? '✅ Yes' : fb.would_recommend === false ? '❌ No' : '—'}</div>
+                      </div>
+                    </div>
+                    {fb.most_useful && <div className="text-sm mb-2"><span className="text-slate-500">Most useful: </span>{fb.most_useful}</div>}
+                    {fb.improvements && <div className="text-sm mb-2"><span className="text-slate-500">Improvements: </span>{fb.improvements}</div>}
+                    {fb.additional_comments && <div className="text-sm"><span className="text-slate-500">Comments: </span>{fb.additional_comments}</div>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* REVIEWS TAB */}
+        {tab === 'Reviews' && (
+          <div>
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-blue-900">Reviews & Testimonials</h2>
+              <p className="text-slate-500 text-sm mt-1">{reviews.filter(r => !r.approved).length} pending approval · {reviews.filter(r => r.approved).length} approved & live</p>
+            </div>
+            {reviews.length === 0 ? (
+              <div className="bg-white rounded-xl p-12 border border-slate-100 text-center">
+                <div className="text-5xl mb-4">⭐</div>
+                <h3 className="font-semibold text-slate-700 mb-2">No reviews yet</h3>
+                <p className="text-slate-500 text-sm">Reviews submitted by participants and managers will appear here for approval.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {reviews.map(rev => (
+                  <div key={rev.id} className={`bg-white rounded-xl border shadow-sm p-5 ${!rev.approved ? 'border-yellow-200' : 'border-green-200'}`}>
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <div className="font-semibold text-slate-800">{rev.reviewer_name}</div>
+                        <div className="text-xs text-slate-500">{rev.reviewer_role || ''} · {rev.organisation || ''} · {new Date(rev.submitted_at).toLocaleDateString('en-GB')}</div>
+                        <div className="text-xs mt-1">
+                          <span className={`px-2 py-0.5 rounded-full font-medium ${
+                            rev.service_type === 'consulting' ? 'bg-purple-100 text-purple-700' :
+                            rev.service_type === 'training' ? 'bg-blue-100 text-blue-700' :
+                            'bg-green-100 text-green-700'
+                          }`}>{rev.service_type || 'General'}</span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="flex gap-1 justify-end mb-1">
+                          {[1,2,3,4,5].map(s => <span key={s} className={s <= (rev.rating || 0) ? 'text-yellow-400' : 'text-slate-200'}>★</span>)}
+                        </div>
+                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${rev.approved ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                          {rev.approved ? '✅ Live on site' : '⏳ Pending approval'}
+                        </span>
+                      </div>
+                    </div>
+                    {rev.headline && <div className="font-semibold text-slate-700 mb-2 italic">"{rev.headline}"</div>}
+                    <p className="text-slate-600 text-sm mb-4">{rev.review_text}</p>
+                    <div className="flex gap-2">
+                      {!rev.approved ? (
+                        <button onClick={async () => { await supabase.from('reviews_kajidori').update({ approved: true, approved_at: new Date().toISOString() }).eq('id', rev.id); loadData() }}
+                          className="bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-green-700 transition-colors">✅ Approve & Publish</button>
+                      ) : (
+                        <button onClick={async () => { await supabase.from('reviews_kajidori').update({ approved: false, approved_at: null }).eq('id', rev.id); loadData() }}
+                          className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-xs font-semibold hover:bg-slate-200 transition-colors">Unpublish</button>
+                      )}
+                      <button onClick={async () => { if(window.confirm('Delete this review?')) { await supabase.from('reviews_kajidori').delete().eq('id', rev.id); loadData() } }}
+                        className="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-xs font-semibold hover:bg-red-100 transition-colors">🗑️ Delete</button>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
