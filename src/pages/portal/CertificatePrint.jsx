@@ -333,32 +333,36 @@ export default function CertificatePrint() {
               display: 'flex', gap: '24mm', justifyContent: 'center',
               marginBottom: '6mm',
             }}>
-              {[
-                { label: 'Authorised Signature', name: 'Yeukai Kajidori' },
-                { label: 'Participant Signature', name: '' },
-              ].map(sig => (
-                <div key={sig.label} style={{ textAlign: 'center', width: '55mm' }}>
-                  {sig.name && (
-                    <div style={{
-                      fontSize: '14px', color: '#1e3a5f', fontStyle: 'italic',
-                      marginBottom: '1mm', fontFamily: 'Georgia, serif',
-                    }}>
-                      {sig.name}
-                    </div>
-                  )}
+              {/* Authorised signature — Yeukai's digital signature */}
+              <div style={{ textAlign: 'center', width: '55mm' }}>
+                <img
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663231528991/fQjbWeyyGjvK6u3XAvmsuB/Yeukai'sSignature_32a522d5.png"
+                  alt="Yeukai Kajidori signature"
+                  style={{ height: '14mm', objectFit: 'contain', marginBottom: '1mm', display: 'block', margin: '0 auto 1mm' }}
+                />
+                <div style={{ borderTop: '1px solid #94a3b8', paddingTop: '2mm' }}>
                   <div style={{
-                    borderTop: '1px solid #94a3b8', paddingTop: '2mm',
+                    fontSize: '9px', color: '#94a3b8',
+                    fontFamily: 'Arial, sans-serif', letterSpacing: '1px',
+                    textTransform: 'uppercase',
                   }}>
-                    <div style={{
-                      fontSize: '9px', color: '#94a3b8',
-                      fontFamily: 'Arial, sans-serif', letterSpacing: '1px',
-                      textTransform: 'uppercase',
-                    }}>
-                      {sig.label}
-                    </div>
+                    Authorised Signature
                   </div>
                 </div>
-              ))}
+              </div>
+              {/* Participant signature — blank line */}
+              <div style={{ textAlign: 'center', width: '55mm' }}>
+                <div style={{ height: '14mm', marginBottom: '1mm' }} />
+                <div style={{ borderTop: '1px solid #94a3b8', paddingTop: '2mm' }}>
+                  <div style={{
+                    fontSize: '9px', color: '#94a3b8',
+                    fontFamily: 'Arial, sans-serif', letterSpacing: '1px',
+                    textTransform: 'uppercase',
+                  }}>
+                    Participant Signature
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* CQC note */}
