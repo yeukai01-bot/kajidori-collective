@@ -511,7 +511,6 @@ export default function CertificatePrint() {
 
           </div>
         </div>
-      </div>
 
         {/* ═══════════════════════════════════════════════════
             BACK PAGE — Module Breakdown & Regulatory Refs
@@ -758,7 +757,7 @@ export default function CertificatePrint() {
           </div>
         </div>
 
-    </div>
+      </div>
     </>
   )
 }
