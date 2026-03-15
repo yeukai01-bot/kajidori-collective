@@ -409,50 +409,116 @@ export default function ParticipantDashboard() {
         {tab === 'Certificates' && (
           <div>
             <h2 className="text-2xl font-bold text-blue-900 mb-2">My Certificates</h2>
-            <p className="text-slate-500 mb-8 text-sm">Certificates are issued upon completing a training programme.</p>
+            <p className="text-slate-500 mb-8 text-sm">
+              Certificates are issued by your administrator upon completing a training programme.
+              Once issued, you can print or save your certificate as a PDF.
+            </p>
 
-            {certificates.length === 0 ? (
+            {certificates.filter(c => c.status === 'issued').length === 0 ? (
               <div className="bg-white rounded-xl p-12 border border-slate-100 text-center">
                 <div className="text-5xl mb-4">🏆</div>
-                <h3 className="font-semibold text-slate-700 mb-2">No certificates yet</h3>
-                <p className="text-slate-500 text-sm">Complete a training programme to earn your first certificate.</p>
+                <h3 className="font-semibold text-slate-700 mb-2">No certificates issued yet</h3>
+                <p className="text-slate-500 text-sm max-w-sm mx-auto">
+                  Your administrator will issue your certificate once you have completed your full-day workshop
+                  and mentoring programme. Keep logging your attendance and mentoring sessions.
+                </p>
+                <div className="mt-6 flex gap-3 justify-center">
+                  <button onClick={() => setTab('Check-In')}
+                    className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors">
+                    📋 Log Workshop Attendance
+                  </button>
+                  <button onClick={() => setTab('Mentoring')}
+                    className="bg-white text-blue-900 border border-blue-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors">
+                    🎯 Mentoring Tracker
+                  </button>
+                </div>
               </div>
             ) : (
-              <div className="grid md:grid-cols-2 gap-4">
-                {certificates.map(cert => (
-                  <div key={cert.id} className="bg-white rounded-xl p-6 border border-slate-100 shadow-sm">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="text-3xl">🏆</div>
-                      <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                        cert.status === 'issued' ? 'bg-yellow-100 text-yellow-800' :
-                        cert.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
-                        'bg-slate-100 text-slate-600'
-                      }`}>
-                        {cert.status === 'issued' ? 'Certified' : cert.status === 'in_progress' ? 'In Progress' : cert.status}
-                      </span>
+              <div className="space-y-8">
+                {certificates.filter(c => c.status === 'issued').map(cert => (
+                  <div key={cert.id}>
+                    {/* Print button */}
+                    <div className="flex justify-end mb-3">
+                      <button
+                        onClick={() => window.print()}
+                        className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition-colors flex items-center gap-2">
+                        🖨️ Print / Save as PDF
+                      </button>
                     </div>
-                    <h3 className="font-bold text-blue-900 mb-1">
-                      {getProgrammeName(cert.programme_id)}
-                    </h3>
-                    {cert.progress_percent !== null && cert.progress_percent !== undefined && (
-                      <div className="mb-3">
-                        <div className="flex justify-between text-xs text-slate-500 mb-1">
-                          <span>Progress</span>
-                          <span>{cert.progress_percent}%</span>
+
+                    {/* Certificate design */}
+                    <div
+                      id={`certificate-${cert.id}`}
+                      className="bg-white border-8 border-double border-blue-900 rounded-2xl p-10 shadow-xl text-center relative overflow-hidden print:shadow-none print:break-inside-avoid"
+                      style={{ fontFamily: 'Georgia, serif' }}>
+
+                      {/* Decorative top bar */}
+                      <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-900 via-yellow-400 to-blue-900"></div>
+                      <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-900 via-yellow-400 to-blue-900"></div>
+
+                      {/* Logo / org name */}
+                      <div className="flex items-center justify-center gap-3 mb-6">
+                        <div className="w-12 h-12 bg-blue-900 rounded-full flex items-center justify-center">
+                          <span className="text-yellow-400 font-bold text-xl">K</span>
                         </div>
-                        <div className="w-full bg-slate-100 rounded-full h-2">
-                          <div className="bg-blue-900 h-2 rounded-full" style={{ width: `${cert.progress_percent}%` }}></div>
+                        <div className="text-left">
+                          <div className="text-blue-900 font-bold text-lg leading-tight">The Kajidori Collective</div>
+                          <div className="text-slate-500 text-xs">Learning & Compliance Portal</div>
                         </div>
                       </div>
-                    )}
-                    <p className="text-slate-500 text-xs mb-2">
-                      {cert.issue_date
-                        ? `Issued: ${new Date(cert.issue_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`
-                        : 'Not yet issued'}
-                    </p>
-                    {cert.reference_number && (
-                      <div className="text-xs text-slate-400">Ref: {cert.reference_number}</div>
-                    )}
+
+                      <div className="border-t border-b border-slate-200 py-6 mb-6">
+                        <p className="text-slate-500 text-sm uppercase tracking-widest mb-3">Certificate of Completion</p>
+                        <p className="text-slate-600 text-base mb-4">This is to certify that</p>
+                        <h2 className="text-3xl font-bold text-blue-900 mb-4" style={{ fontFamily: 'Georgia, serif' }}>
+                          {[profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || user?.email}
+                        </h2>
+                        <p className="text-slate-600 text-base mb-2">has successfully completed</p>
+                        <h3 className="text-xl font-bold text-blue-900 mb-4">
+                          {getProgrammeName(cert.programme_id)}
+                        </h3>
+                        <p className="text-slate-500 text-sm">
+                          including the Full-Day Workshop and 10-Week Mentoring & Coaching Programme
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-6 text-center mb-6">
+                        <div>
+                          <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Date of Issue</div>
+                          <div className="text-slate-700 font-semibold text-sm">
+                            {cert.issue_date
+                              ? new Date(cert.issue_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+                              : '—'}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Reference</div>
+                          <div className="text-slate-700 font-semibold text-sm">{cert.reference_number || '—'}</div>
+                        </div>
+                        <div>
+                          <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Issued By</div>
+                          <div className="text-slate-700 font-semibold text-sm">Kajidori Collective</div>
+                        </div>
+                      </div>
+
+                      {/* Signature line */}
+                      <div className="flex justify-center gap-16 mt-4">
+                        <div className="text-center">
+                          <div className="border-t border-slate-400 pt-2 w-40">
+                            <div className="text-xs text-slate-500">Authorised Signature</div>
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div className="border-t border-slate-400 pt-2 w-40">
+                            <div className="text-xs text-slate-500">Participant Signature</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 text-xs text-slate-400">
+                        This certificate is issued in accordance with CQC compliance standards and is valid as evidence of training completion.
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>

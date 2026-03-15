@@ -25,6 +25,7 @@ export default function ManagerDashboard() {
   const [allAttendance, setAllAttendance] = useState([])
   const [myAttendance, setMyAttendance] = useState([])
   const [myMentoring, setMyMentoring] = useState([])
+  const [myCertificates, setMyCertificates] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
@@ -98,6 +99,15 @@ export default function ManagerDashboard() {
       .eq('user_id', user.id)
       .order('week_number', { ascending: true })
     setMyMentoring(myMent || [])
+
+    // Load manager's own certificates
+    const { data: myCerts } = await supabase
+      .from(TABLES.CERTIFICATES)
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('status', 'issued')
+      .order('issue_date', { ascending: false })
+    setMyCertificates(myCerts || [])
 
     setLoading(false)
   }
@@ -538,6 +548,94 @@ export default function ManagerDashboard() {
                   )
                 })}
               </div>
+            </div>
+
+            {/* My Certificates section */}
+            <div className="mt-10">
+              <h3 className="text-xl font-bold text-blue-900 mb-2">My Certificates</h3>
+              <p className="text-slate-500 text-sm mb-6">
+                Certificates issued by your administrator appear here. You can print or save them as PDF.
+              </p>
+              {myCertificates.length === 0 ? (
+                <div className="bg-white rounded-xl p-10 border border-slate-100 text-center">
+                  <div className="text-4xl mb-3">🏆</div>
+                  <p className="text-slate-500 text-sm">No certificates issued yet. Complete your training to earn your certificate.</p>
+                </div>
+              ) : (
+                <div className="space-y-8">
+                  {myCertificates.map(cert => (
+                    <div key={cert.id}>
+                      <div className="flex justify-end mb-3">
+                        <button
+                          onClick={() => window.print()}
+                          className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition-colors">
+                          🖨️ Print / Save as PDF
+                        </button>
+                      </div>
+                      <div
+                        className="bg-white border-8 border-double border-blue-900 rounded-2xl p-10 shadow-xl text-center relative overflow-hidden"
+                        style={{ fontFamily: 'Georgia, serif' }}>
+                        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-900 via-yellow-400 to-blue-900"></div>
+                        <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-900 via-yellow-400 to-blue-900"></div>
+                        <div className="flex items-center justify-center gap-3 mb-6">
+                          <div className="w-12 h-12 bg-blue-900 rounded-full flex items-center justify-center">
+                            <span className="text-yellow-400 font-bold text-xl">K</span>
+                          </div>
+                          <div className="text-left">
+                            <div className="text-blue-900 font-bold text-lg leading-tight">The Kajidori Collective</div>
+                            <div className="text-slate-500 text-xs">Learning & Compliance Portal</div>
+                          </div>
+                        </div>
+                        <div className="border-t border-b border-slate-200 py-6 mb-6">
+                          <p className="text-slate-500 text-sm uppercase tracking-widest mb-3">Certificate of Completion</p>
+                          <p className="text-slate-600 text-base mb-4">This is to certify that</p>
+                          <h2 className="text-3xl font-bold text-blue-900 mb-4" style={{ fontFamily: 'Georgia, serif' }}>
+                            {[profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || user?.email}
+                          </h2>
+                          <p className="text-slate-600 text-base mb-2">has successfully completed</p>
+                          <h3 className="text-xl font-bold text-blue-900 mb-4">
+                            {programmes.find(p => p.id === cert.programme_id)?.name || 'Training Programme'}
+                          </h3>
+                          <p className="text-slate-500 text-sm">
+                            including the Full-Day Workshop and 10-Week Mentoring & Coaching Programme
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-3 gap-6 text-center mb-6">
+                          <div>
+                            <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Date of Issue</div>
+                            <div className="text-slate-700 font-semibold text-sm">
+                              {cert.issue_date ? new Date(cert.issue_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Reference</div>
+                            <div className="text-slate-700 font-semibold text-sm">{cert.reference_number || '—'}</div>
+                          </div>
+                          <div>
+                            <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Issued By</div>
+                            <div className="text-slate-700 font-semibold text-sm">Kajidori Collective</div>
+                          </div>
+                        </div>
+                        <div className="flex justify-center gap-16 mt-4">
+                          <div className="text-center">
+                            <div className="border-t border-slate-400 pt-2 w-40">
+                              <div className="text-xs text-slate-500">Authorised Signature</div>
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <div className="border-t border-slate-400 pt-2 w-40">
+                              <div className="text-xs text-slate-500">Participant Signature</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-6 text-xs text-slate-400">
+                          This certificate is issued in accordance with CQC compliance standards and is valid as evidence of training completion.
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
