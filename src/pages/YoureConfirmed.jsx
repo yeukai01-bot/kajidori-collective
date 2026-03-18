@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-const YEUKAI_PHOTO = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663231528991/jPaHykWfLrMYEDWA.jpeg'
+const YEUKAI_PHOTO = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663231528991/iICOqSmlpYSarXZX.jpeg'
 
 const mediaLogos = [
   { name: 'BBC', style: 'font-bold text-lg tracking-tight' },
@@ -142,7 +142,7 @@ export default function YoureConfirmed() {
               <img
                 src={YEUKAI_PHOTO}
                 alt="Yeukai Kajidori"
-                className="w-40 h-40 rounded-full object-cover border-4 border-yellow-400 shadow-xl"
+                className="w-40 h-40 rounded-full object-cover object-top border-4 border-yellow-400 shadow-xl"
               />
             </div>
             <div>
