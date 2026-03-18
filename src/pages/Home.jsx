@@ -8,7 +8,7 @@ const PHOTO_SMILING = 'https://files.manuscdn.com/user_upload_by_module/session_
 const stats = [
   { stat: '20+', label: 'Years in Health & Social Care' },
   { stat: '£2.5M+', label: 'Contracts Secured Annually' },
-  { stat: '550+', label: 'Global Leaders Interviewed' },
+  { stat: '584+', label: 'Global Leaders Interviewed' },
   { stat: '5', label: 'New Facilities Launched in 2 Years' },
 ]
 
@@ -214,12 +214,12 @@ export default function Home() {
                 Yeukai has a proven track record of turning vision into reality. He has <strong className="text-blue-900">doubled business operations</strong>, secured contracts worth over <strong className="text-blue-900">£2.5 million annually</strong>, and successfully launched <strong className="text-blue-900">five new supported living facilities</strong> in just two years. His strategic leadership has consistently resulted in <strong className="text-blue-900">'Good' CQC ratings</strong> and a <strong className="text-blue-900">20% improvement in staff retention</strong>.
               </p>
               <p>
-                As the host of the globally-ranked <strong className="text-blue-900">Yeukai Business Show</strong> podcast, he has interviewed over 550 global business leaders. He is also the co-author of the international Amazon bestseller, <em>Eight Qualities for Great Leadership</em>.
+                As the host of the globally-ranked <strong className="text-blue-900">Yeukai Business Show</strong> podcast, he has interviewed over 584 global business leaders. He is also the co-author of the international Amazon bestseller, <em>Eight Qualities for Great Leadership</em>.
               </p>
             </div>
             <div className="mt-10 grid grid-cols-3 gap-4">
               {[
-                { value: '550+', label: 'Podcast Interviews' },
+                { value: '584+', label: 'Podcast Interviews' },
                 { value: 'Amazon', label: 'International Bestseller' },
                 { value: 'Global', label: 'Top-Ranked Podcast' },
               ].map(item => (
