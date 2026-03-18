@@ -74,6 +74,27 @@ export default function YoureConfirmed() {
         </div>
       </section>
 
+      {/* ── CALENDAR ACTION BANNER ── */}
+      <section className="bg-yellow-400 py-6 px-4">
+        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+          <div className="text-4xl flex-shrink-0">📅</div>
+          <div className="flex-1">
+            <p className="font-bold text-blue-900 text-lg leading-snug">
+              Do this now — before you close this page.
+            </p>
+            <p className="text-blue-900 text-sm mt-1">
+              Open your email and click the calendar invite to add your session to your diary. It takes 10 seconds. Guests who do this almost never miss their session.
+            </p>
+          </div>
+          <div className="flex-shrink-0">
+            <div className="bg-blue-900 text-yellow-400 px-5 py-3 rounded-lg font-bold text-sm text-center leading-tight">
+              📧 Check your inbox now
+              <span className="block text-xs font-normal text-blue-300 mt-1">Look for the calendar invite email</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── WHAT HAPPENS NEXT ── */}
       <section className="py-14 px-4 bg-slate-50 border-b border-slate-200">
         <div className="max-w-4xl mx-auto">
