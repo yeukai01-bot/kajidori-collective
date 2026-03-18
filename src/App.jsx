@@ -5,6 +5,7 @@ import About from './pages/About'
 import Services from './pages/Services'
 import Contact from './pages/Contact'
 import CaseStudies from './pages/CaseStudies'
+import YoureConfirmed from './pages/YoureConfirmed'
 import Login from './pages/portal/Login'
 import Register from './pages/portal/Register'
 import ForgotPassword from './pages/portal/ForgotPassword'
@@ -63,6 +64,7 @@ export default function App() {
       <Route path="/services" element={<PublicLayout><Services /></PublicLayout>} />
       <Route path="/contact" element={<PublicLayout><Contact /></PublicLayout>} />
       <Route path="/case-studies" element={<PublicLayout><CaseStudies /></PublicLayout>} />
+      <Route path="/youre-confirmed" element={<PublicLayout><YoureConfirmed /></PublicLayout>} />
       <Route path="/portal/login" element={<Login />} />
       <Route path="/portal/register" element={<Register />} />
       <Route path="/portal/forgot-password" element={<ForgotPassword />} />
