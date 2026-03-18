@@ -69,7 +69,7 @@ export default function YoureConfirmed() {
             Your session is booked.
           </h1>
           <p className="text-blue-200 text-lg max-w-xl mx-auto">
-            Check your inbox — a calendar invitation and Zoom link are on their way. Everything you need is below.
+            Check your inbox — a calendar invitation and Google Meet link are on their way. Everything you need is below.
           </p>
         </div>
       </section>
@@ -80,7 +80,7 @@ export default function YoureConfirmed() {
           <h2 className="font-display text-2xl font-bold text-blue-900 text-center mb-10">What happens next</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
-              { step: '1', title: 'Check your email', desc: 'A confirmation email with your Zoom link and calendar invite has been sent. Add it to your diary now so it doesn\'t get lost.' },
+              { step: '1', title: 'Check your email', desc: 'A confirmation email with your Google Meet link and calendar invite has been sent. Add it to your diary now so it doesn’t get lost.' },
               { step: '2', title: 'No preparation needed', desc: 'Just show up as yourself. Yeukai will guide the conversation — there are no wrong answers and no script to follow.' },
               { step: '3', title: 'Receive your assets', desc: 'Within 5–7 working days of recording, you\'ll receive the edited episode and social media graphics to share with your network.' },
             ].map(({ step, title, desc }) => (
