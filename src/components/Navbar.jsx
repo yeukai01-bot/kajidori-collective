@@ -25,6 +25,7 @@ export default function Navbar() {
             <Link to="/services" className={`text-sm transition-colors ${active('/services')}`}>Services</Link>
             <Link to="/case-studies" className={`text-sm transition-colors ${active('/case-studies')}`}>Case Studies</Link>
             <HashLink smooth to="/#pricing" className="text-sm text-white hover:text-yellow-300 transition-colors">Pricing</HashLink>
+            <Link to="/apply-to-be-a-guest" className={`text-sm font-semibold transition-colors ${active('/apply-to-be-a-guest') || 'text-yellow-300 hover:text-yellow-200'}`}>Be a Guest</Link>
             <Link to="/contact" className={`text-sm transition-colors ${active('/contact')}`}>Work With Us</Link>
             <Link to="/portal/login" className="bg-yellow-400 text-blue-900 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-yellow-300 transition-colors">
               Client Portal
@@ -43,7 +44,7 @@ export default function Navbar() {
         {/* Mobile menu */}
         {open && (
           <div className="md:hidden pb-4 space-y-2">
-            {[['/', 'Home'], ['/about', 'About'], ['/services', 'Services'], ['/case-studies', 'Case Studies'], ['/contact', 'Work With Us']].map(([path, label]) => (
+            {[['/', 'Home'], ['/about', 'About'], ['/services', 'Services'], ['/case-studies', 'Case Studies'], ['/apply-to-be-a-guest', 'Be a Guest'], ['/contact', 'Work With Us']].map(([path, label]) => (
               <Link key={path} to={path} onClick={() => setOpen(false)} className="block text-white hover:text-yellow-300 py-2 px-2 text-sm">{label}</Link>
             ))}
             <HashLink smooth to="/#pricing" onClick={() => setOpen(false)} className="block text-white hover:text-yellow-300 py-2 px-2 text-sm">Pricing</HashLink>
