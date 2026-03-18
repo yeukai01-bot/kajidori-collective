@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 
 const TIERS = [
@@ -76,18 +76,10 @@ const TIERS = [
 ]
 
 const CRITERIA = [
-  'You are a registered manager, care group CEO, operations director, commissioner, or senior leader in UK health and social care.',
-  'You have a genuine insight, lesson, or story that would benefit the care sector.',
-  'You are an authority in your field with a proven track record.',
+  'You have a genuine insight, lesson, or solution that would benefit care sector leaders.',
+  'You are an authority in your field with a proven track record in UK health and social care.',
   'You are committed to helping the sector find better, more compassionate ways to serve people.',
 ]
-
-const TRAFFT_URLS = {
-  expert: 'https://ybs.trafft.com/',
-  essential: 'https://ybs.trafft.com/',
-  featured: 'https://ybs.trafft.com/',
-  authority: 'https://ybs.trafft.com/',
-}
 
 const FAQS = [
   {
@@ -100,7 +92,7 @@ const FAQS = [
   },
   {
     q: 'What happens after I submit my application?',
-    a: 'We review every application within 24 hours to ensure a strong fit for our audience. If approved, you will receive an email with a link to book your session on your chosen package. No payment is taken until you schedule your call.',
+    a: 'We review every application within 24 hours to ensure a strong fit for our audience. If approved, you will receive an email with a link to book your session. No payment is taken until you schedule your call.',
   },
   {
     q: 'How long until my episode is published?',
@@ -118,9 +110,12 @@ const FAQS = [
 
 export default function ApplyGuest() {
   const [selectedTier, setSelectedTier] = useState('featured')
-  const [step, setStep] = useState(1) // 1 = form, 2 = submitted
+  const [step, setStep] = useState(1)
   const [submitting, setSubmitting] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
+  const [mediaFile, setMediaFile] = useState(null)
+  const fileInputRef = useRef(null)
+
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -128,13 +123,27 @@ export default function ApplyGuest() {
     phone: '',
     jobTitle: '',
     organisation: '',
-    website: '',
-    linkedin: '',
+    // Q1
     bio: '',
-    topic1: '',
-    topic2: '',
-    topic3: '',
-    callToAction: '',
+    // Q2
+    solutions: '',
+    // Q3
+    origin: '',
+    // Q4
+    bigSecret: '',
+    // Q5
+    anythingElse: '',
+    // Q6 - contact / social
+    website: '',
+    twitter: '',
+    facebook: '',
+    linkedin: '',
+    skype: '',
+    // Q7 - agreement
+    agreePromotion: '',
+    // Q8 - final thoughts
+    finalThoughts: '',
+    // How did you hear
     heardAbout: '',
     tier: 'featured',
     agreeTerms: false,
@@ -152,6 +161,11 @@ export default function ApplyGuest() {
     setForm(prev => ({ ...prev, tier: tierId }))
   }
 
+  function handleFileChange(e) {
+    const file = e.target.files[0]
+    if (file) setMediaFile(file)
+  }
+
   function validate() {
     const e = {}
     if (!form.firstName.trim()) e.firstName = 'Required'
@@ -160,8 +174,10 @@ export default function ApplyGuest() {
     if (!form.jobTitle.trim()) e.jobTitle = 'Required'
     if (!form.organisation.trim()) e.organisation = 'Required'
     if (!form.bio.trim() || form.bio.trim().length < 50) e.bio = 'Please write at least 50 characters'
-    if (!form.topic1.trim()) e.topic1 = 'Please provide at least one topic'
-    if (!form.callToAction.trim()) e.callToAction = 'Required'
+    if (!form.solutions.trim() || form.solutions.trim().length < 30) e.solutions = 'Please describe at least one solution (minimum 30 characters)'
+    if (!form.origin.trim() || form.origin.trim().length < 30) e.origin = 'Please share your story (minimum 30 characters)'
+    if (!form.bigSecret.trim() || form.bigSecret.trim().length < 30) e.bigSecret = 'Please share your big insight (minimum 30 characters)'
+    if (!form.agreePromotion) e.agreePromotion = 'Please select Yes or No'
     if (!form.agreeTerms) e.agreeTerms = 'You must agree to continue'
     return e
   }
@@ -171,12 +187,13 @@ export default function ApplyGuest() {
     const errs = validate()
     if (Object.keys(errs).length > 0) {
       setErrors(errs)
-      const firstErr = document.querySelector('[data-error="true"]')
-      if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      setTimeout(() => {
+        const firstErrEl = document.querySelector('[data-error="true"]')
+        if (firstErrEl) firstErrEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 50)
       return
     }
     setSubmitting(true)
-    // Simulate submission — in production this would POST to a backend or email service
     await new Promise(r => setTimeout(r, 1200))
     setSubmitting(false)
     setStep(2)
@@ -194,7 +211,7 @@ export default function ApplyGuest() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-blue-900 mb-4">Application Received</h1>
+          <h1 className="text-3xl font-bold text-blue-900 mb-4">Application Received!</h1>
           <p className="text-gray-600 mb-4 leading-relaxed">
             Thank you, <strong>{form.firstName}</strong>. Your application for <strong>{selectedTierData?.name}</strong> has been submitted successfully.
           </p>
@@ -236,18 +253,12 @@ export default function ApplyGuest() {
             Join 584+ leaders who have shared their expertise on one of the UK's leading care sector podcasts. We review every application personally — no payment is taken until you are approved and ready to book.
           </p>
           <div className="flex flex-wrap justify-center gap-6 text-sm text-blue-200">
-            <span className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-              No payment until approved
-            </span>
-            <span className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-              Response within 24 hours
-            </span>
-            <span className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-              Maximum 8 episodes per month
-            </span>
+            {['No payment until approved', 'Response within 24 hours', 'Maximum 8 episodes per month'].map(t => (
+              <span key={t} className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                {t}
+              </span>
+            ))}
           </div>
         </div>
       </section>
@@ -325,29 +336,30 @@ export default function ApplyGuest() {
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-2xl font-bold text-blue-900 mb-2">Your Application</h2>
-            <p className="text-gray-500 text-sm">Takes about 5 minutes. No payment is required at this stage.</p>
+            <p className="text-gray-500 text-sm">Takes about 10 minutes. No payment is required at this stage.</p>
           </div>
 
-          <form onSubmit={handleSubmit} noValidate className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 space-y-8">
+          <form onSubmit={handleSubmit} noValidate className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 space-y-10">
 
             {/* Personal details */}
             <div>
-              <h3 className="text-sm font-bold text-blue-900 uppercase tracking-widest mb-5 pb-2 border-b border-gray-100">About You</h3>
+              <SectionHeading number="1" title="Your Details" />
               <div className="grid sm:grid-cols-2 gap-5">
                 <Field label="First Name" name="firstName" value={form.firstName} onChange={handleChange} error={errors.firstName} required />
                 <Field label="Last Name" name="lastName" value={form.lastName} onChange={handleChange} error={errors.lastName} required />
                 <Field label="Email Address" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} required />
                 <Field label="Phone Number" name="phone" type="tel" value={form.phone} onChange={handleChange} error={errors.phone} />
                 <Field label="Job Title" name="jobTitle" value={form.jobTitle} onChange={handleChange} error={errors.jobTitle} required placeholder="e.g. Registered Manager, CEO, Operations Director" />
-                <Field label="Organisation" name="organisation" value={form.organisation} onChange={handleChange} error={errors.organisation} required />
-                <Field label="Website (optional)" name="website" type="url" value={form.website} onChange={handleChange} error={errors.website} placeholder="https://" />
-                <Field label="LinkedIn Profile (optional)" name="linkedin" type="url" value={form.linkedin} onChange={handleChange} error={errors.linkedin} placeholder="https://linkedin.com/in/..." />
+                <Field label="Organisation / Company" name="organisation" value={form.organisation} onChange={handleChange} error={errors.organisation} required />
               </div>
             </div>
 
-            {/* Bio */}
+            {/* Q1 - Bio */}
             <div>
-              <h3 className="text-sm font-bold text-blue-900 uppercase tracking-widest mb-5 pb-2 border-b border-gray-100">Your Story</h3>
+              <SectionHeading number="2" title="Your Expert Bio" />
+              <p className="text-xs text-gray-500 mb-4">
+                Tell us your expert skill and what you do. If you have written a book, received awards, or have notable achievements — include it all here. <strong>Blow your own trumpet!</strong>
+              </p>
               <TextArea
                 label="Your Professional Bio"
                 name="bio"
@@ -356,41 +368,187 @@ export default function ApplyGuest() {
                 error={errors.bio}
                 required
                 rows={5}
-                placeholder="Tell us about your background, your role, and what makes your perspective valuable to care sector leaders. (Minimum 50 characters)"
+                placeholder="e.g. I am a CQC Registered Manager with 15 years' experience leading Outstanding-rated services. I am the author of [Book Title] and was named Care Manager of the Year 2023 by [Organisation]..."
                 hint="This will be used to introduce you to our audience and in your episode show notes."
               />
-            </div>
-
-            {/* Topics */}
-            <div>
-              <h3 className="text-sm font-bold text-blue-900 uppercase tracking-widest mb-5 pb-2 border-b border-gray-100">What You Want to Talk About</h3>
-              <p className="text-xs text-gray-500 mb-5">Suggest 1–3 topics you would like to explore in your interview. These help Yeukai prepare a focused, high-value conversation.</p>
-              <div className="space-y-4">
-                <Field label="Topic 1" name="topic1" value={form.topic1} onChange={handleChange} error={errors.topic1} required placeholder="e.g. How we achieved Outstanding in our last CQC inspection" />
-                <Field label="Topic 2 (optional)" name="topic2" value={form.topic2} onChange={handleChange} error={errors.topic2} placeholder="e.g. Building a culture of dignity and respect in a 200-person care team" />
-                <Field label="Topic 3 (optional)" name="topic3" value={form.topic3} onChange={handleChange} error={errors.topic3} placeholder="e.g. What I wish I had known when I became a Registered Manager" />
+              {/* File upload */}
+              <div className="mt-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Upload your Media Kit or CV <span className="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center cursor-pointer hover:border-blue-300 transition-colors"
+                >
+                  {mediaFile ? (
+                    <div className="flex items-center justify-center gap-3 text-sm text-blue-900 font-semibold">
+                      <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                      {mediaFile.name}
+                      <button type="button" onClick={e => { e.stopPropagation(); setMediaFile(null) }} className="text-gray-400 hover:text-red-500 text-xs ml-2">Remove</button>
+                    </div>
+                  ) : (
+                    <>
+                      <svg className="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                      </svg>
+                      <p className="text-sm text-gray-500">Click to upload a PDF, Word document, or image</p>
+                      <p className="text-xs text-gray-400 mt-1">Max 10MB — PDF, DOC, DOCX, JPG, PNG</p>
+                    </>
+                  )}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
               </div>
             </div>
 
-            {/* Call to action */}
+            {/* Q2 - Solutions */}
             <div>
-              <h3 className="text-sm font-bold text-blue-900 uppercase tracking-widest mb-5 pb-2 border-b border-gray-100">Your Call to Action</h3>
+              <SectionHeading number="3" title="How You Help People" />
+              <p className="text-xs text-gray-500 mb-4">
+                Name up to 3 solutions you provide to care sector leaders. How do you help people? Do you have testimonials? Is your impact measurable or quantifiable? <strong>Really shine here — tell us why people prefer to work with you.</strong>
+              </p>
               <TextArea
-                label="What would you like listeners to do after hearing your episode?"
-                name="callToAction"
-                value={form.callToAction}
+                label="Your Solutions & Impact"
+                name="solutions"
+                value={form.solutions}
                 onChange={handleChange}
-                error={errors.callToAction}
+                error={errors.solutions}
                 required
-                rows={3}
-                placeholder="e.g. Visit our website to download our free CQC readiness checklist. Connect with me on LinkedIn. Book a free discovery call."
-                hint="You will have the opportunity to direct listeners to a resource, website, or offer at the end of your interview."
+                rows={6}
+                placeholder={`1. I help registered managers achieve Outstanding CQC ratings — 8 out of 10 of my clients have improved their rating within 12 months.\n2. I provide leadership coaching that reduces staff turnover — my clients report an average 30% reduction in turnover.\n3. "Working with [Name] transformed how our team approached person-centred care." — [Testimonial, Job Title]`}
+              />
+            </div>
+
+            {/* Q3 - Origin story */}
+            <div>
+              <SectionHeading number="4" title="Your Story" />
+              <p className="text-xs text-gray-500 mb-4">
+                How did you get started? (a) What inspired you? (b) What obstacles did you have to overcome?
+              </p>
+              <TextArea
+                label="Your Origin Story"
+                name="origin"
+                value={form.origin}
+                onChange={handleChange}
+                error={errors.origin}
+                required
+                rows={5}
+                placeholder="e.g. I became a registered manager after seeing a family member receive poor care. I was inspired to prove that compassionate, high-quality care was possible at scale. My biggest obstacle was..."
+              />
+            </div>
+
+            {/* Q4 - Big secret */}
+            <div>
+              <SectionHeading number="5" title='Your Big "How To" Secret' />
+              <p className="text-xs text-gray-500 mb-4">
+                What is the great BIG "How To" secret you want to reveal to our audience about your area of expertise? Something practical that care leaders can apply right now and see positive results — even if they are new to this approach.
+              </p>
+              <TextArea
+                label="Your Big Insight for Our Listeners"
+                name="bigSecret"
+                value={form.bigSecret}
+                onChange={handleChange}
+                error={errors.bigSecret}
+                required
+                rows={5}
+                placeholder="e.g. The single most powerful thing a registered manager can do RIGHT NOW to improve their CQC rating is... Here is exactly how to do it in 3 steps..."
+              />
+            </div>
+
+            {/* Q5 - Anything else for Yeukai */}
+            <div>
+              <SectionHeading number="6" title="Anything Else for Yeukai?" />
+              <TextArea
+                label="Is there anything else you would like Yeukai to know about you before the show?"
+                name="anythingElse"
+                value={form.anythingElse}
+                onChange={handleChange}
+                error={errors.anythingElse}
+                rows={4}
+                placeholder="Any context, sensitivities, preferred topics to avoid, or anything that would help Yeukai prepare the best possible interview for you..."
+              />
+            </div>
+
+            {/* Q6 - Social / contact details */}
+            <div>
+              <SectionHeading number="7" title="How Can Our Listeners Get in Touch With You?" />
+              <p className="text-xs text-gray-500 mb-5">
+                Complete this section if your uploaded media kit does not already include these details.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-5">
+                <Field label="Website URL" name="website" type="url" value={form.website} onChange={handleChange} error={errors.website} placeholder="https://yourwebsite.com" />
+                <Field label="LinkedIn Profile" name="linkedin" type="url" value={form.linkedin} onChange={handleChange} error={errors.linkedin} placeholder="https://linkedin.com/in/..." />
+                <Field label="Twitter / X Handle" name="twitter" value={form.twitter} onChange={handleChange} error={errors.twitter} placeholder="@yourhandle" />
+                <Field label="Facebook Page" name="facebook" type="url" value={form.facebook} onChange={handleChange} error={errors.facebook} placeholder="https://facebook.com/..." />
+                <Field label="Skype ID (optional)" name="skype" value={form.skype} onChange={handleChange} error={errors.skype} placeholder="your.skype.id" />
+              </div>
+            </div>
+
+            {/* Q7 - Promotion agreement */}
+            <div data-error={!!errors.agreePromotion}>
+              <SectionHeading number="8" title="Promotion Agreement" />
+              <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 mb-4">
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  Thank you for agreeing to be featured on Kajidori Collective Conversations. The podcast will be promoted online, offline, and in print. By participating in the show, you give us permission to promote the recordings through various mediums now and in all future promotions.
+                </p>
+              </div>
+              <p className="text-sm font-semibold text-gray-700 mb-3">Do you agree? <span className="text-red-500">*</span></p>
+              <div className="flex gap-6">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="agreePromotion"
+                    value="yes"
+                    checked={form.agreePromotion === 'yes'}
+                    onChange={handleChange}
+                    className="w-4 h-4 accent-blue-900"
+                  />
+                  <span className="text-sm font-semibold text-gray-700">Yes, I agree</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="agreePromotion"
+                    value="no"
+                    checked={form.agreePromotion === 'no'}
+                    onChange={handleChange}
+                    className="w-4 h-4 accent-blue-900"
+                  />
+                  <span className="text-sm font-semibold text-gray-700">No</span>
+                </label>
+              </div>
+              {errors.agreePromotion && <p className="text-red-500 text-xs mt-2">{errors.agreePromotion}</p>}
+              {form.agreePromotion === 'no' && (
+                <p className="text-amber-600 text-xs mt-2 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  Please note: we are unable to proceed with guest appearances without promotional permission. If you have specific concerns, please contact us at <a href="mailto:yeukaibusinessshow@gmail.com" className="underline">yeukaibusinessshow@gmail.com</a> before submitting.
+                </p>
+              )}
+            </div>
+
+            {/* Q8 - Final thoughts */}
+            <div>
+              <SectionHeading number="9" title="Final Thoughts" />
+              <TextArea
+                label="Do you have any final thoughts or comments? Is there anything else you would like to add?"
+                name="finalThoughts"
+                value={form.finalThoughts}
+                onChange={handleChange}
+                error={errors.finalThoughts}
+                rows={4}
+                placeholder="This is optional — share anything else that would help us understand your story or prepare for your interview..."
               />
             </div>
 
             {/* How did you hear */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">How did you hear about Kajidori Collective Conversations? <span className="text-gray-400 font-normal">(optional)</span></label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                How did you hear about Kajidori Collective Conversations? <span className="text-gray-400 font-normal">(optional)</span>
+              </label>
               <select
                 name="heardAbout"
                 value={form.heardAbout}
@@ -569,8 +727,17 @@ export default function ApplyGuest() {
   )
 }
 
-// Reusable field components
-function Field({ label, name, type = 'text', value, onChange, error, required, placeholder, hint }) {
+// Reusable components
+function SectionHeading({ number, title }) {
+  return (
+    <div className="flex items-center gap-3 mb-5 pb-3 border-b border-gray-100">
+      <span className="w-7 h-7 rounded-full bg-yellow-400 text-blue-900 font-bold text-sm flex items-center justify-center flex-shrink-0">{number}</span>
+      <h3 className="text-sm font-bold text-blue-900 uppercase tracking-widest">{title}</h3>
+    </div>
+  )
+}
+
+function Field({ label, name, type = 'text', value, onChange, error, required, placeholder }) {
   return (
     <div data-error={!!error}>
       <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -584,7 +751,6 @@ function Field({ label, name, type = 'text', value, onChange, error, required, p
         placeholder={placeholder}
         className={`w-full border rounded-lg px-4 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-transparent transition-colors ${error ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
       />
-      {hint && !error && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
   )
