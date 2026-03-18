@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-const YEUKAI_PHOTO = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663231528991/iICOqSmlpYSarXZX.jpeg'
+const YEUKAI_PHOTO = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663231528991/jPaHykWfLrMYEDWA.jpeg'
 
 const mediaLogos = [
   { name: 'BBC', style: 'font-bold text-lg tracking-tight' },
