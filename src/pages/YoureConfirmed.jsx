@@ -149,10 +149,10 @@ export default function YoureConfirmed() {
               <p className="text-yellow-400 font-semibold text-xs uppercase tracking-widest mb-2">About your host</p>
               <h2 className="font-display text-2xl font-bold mb-3">Yeukai Kajidori</h2>
               <p className="text-blue-200 text-sm leading-relaxed mb-4">
-                Yeukai is a CQC Registered Manager, MBA-qualified strategist, and Amazon bestselling author with over 20 years in UK health and social care. Since 2016 she has hosted the Yeukai Business Show — one of the UK's leading business podcasts — interviewing more than 550 global leaders across nine years.
+                Yeukai is a CQC Registered Manager, MBA-qualified strategist, and Amazon bestselling author with over 20 years in UK health and social care. Since 2016 he has hosted the Yeukai Business Show — one of the UK's leading business podcasts — interviewing more than 550 global leaders across nine years.
               </p>
               <p className="text-blue-200 text-sm leading-relaxed">
-                Kajidori Collective Conversations is her dedicated platform for the care sector: a space where registered managers, care group CEOs, and commissioners share the real story behind outstanding care.
+                Kajidori Collective Conversations is his dedicated platform for the care sector: a space where registered managers, care group CEOs, and commissioners share the real story behind outstanding care.
               </p>
             </div>
           </div>
