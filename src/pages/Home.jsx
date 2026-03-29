@@ -587,6 +587,66 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── LEAD MAGNET / BREVO OPT-IN ────────────────────────────────── */}
+      <section className="py-24 px-4 bg-blue-950" id="free-checklist">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+
+            {/* Left — copy */}
+            <div className="text-white">
+              <p className="text-yellow-400 font-bold text-xs uppercase tracking-[0.2em] mb-4">Free Resource</p>
+              <h2 className="text-4xl md:text-5xl font-extrabold leading-tight mb-6">
+                Is Your Service Ready<br />
+                <span className="text-yellow-400">for a CQC Inspection?</span>
+              </h2>
+              <p className="text-blue-200 text-lg leading-relaxed mb-8">
+                Download the free <strong className="text-white">2026 CQC Compliance Checklist</strong> — a step-by-step guide that shows you exactly where your service stands before the inspector arrives. Used by care providers across the UK to identify gaps, prepare their teams, and walk into inspections with confidence.
+              </p>
+              <ul className="space-y-3 text-blue-200 text-base mb-10">
+                {[
+                  '✅ Covers all 5 CQC Key Questions',
+                  '✅ Practical action points for each area',
+                  '✅ Instant download — no waiting',
+                  '✅ Written by a 20-year sector expert',
+                ].map(item => (
+                  <li key={item} className="flex items-start gap-2">{item}</li>
+                ))}
+              </ul>
+              {/* Post-opt-in booking CTA */}
+              <div className="bg-yellow-400 rounded-2xl px-8 py-6">
+                <p className="text-blue-900 font-extrabold text-lg mb-2">Want Yeukai to review your service personally?</p>
+                <p className="text-blue-800 text-sm mb-4">After downloading the checklist, book a free 30-minute CQC Strategy Call and get tailored advice for your specific service.</p>
+                <a
+                  href="https://tfft.io/CRIkyvF"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-blue-900 text-white px-8 py-4 rounded-xl font-bold text-base hover:bg-blue-800 transition-colors"
+                >
+                  Book My Free Strategy Call →
+                </a>
+              </div>
+            </div>
+
+            {/* Right — Brevo embedded form */}
+            <div className="flex justify-center">
+              <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden">
+                <iframe
+                  width="100%"
+                  height="420"
+                  src="https://4d7710d7.sibforms.com/serve/MUIFAOg--2t3JsWa_5_C2bZZk5ZEsaWqWVeuqP9FUb0hcUY6eInEU_U2cjkUpmPf4E2YVkF7_lnoIadohZ4rbG111ya3U66V_iEHikRSUHXk--oPdhB5i3DiUhrCVQEDRGZOOUkpM3f42W_udlqv8DQ2hODTcgDg-DG-SDRELOBvLWVbfTKuzKkyZq8_8c-USjFZBCHwSqH_TpEC"
+                  frameBorder="0"
+                  scrolling="auto"
+                  allowFullScreen
+                  style={{ display: 'block' }}
+                  title="Download Your Free 2026 CQC Compliance Checklist"
+                />
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
       <section className="py-24 px-4 bg-white">
         <div className="max-w-4xl mx-auto text-center">

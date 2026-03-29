@@ -25,6 +25,7 @@ export default function Navbar() {
             <Link to="/services" className={`text-sm transition-colors ${active('/services')}`}>Services</Link>
             <Link to="/case-studies" className={`text-sm transition-colors ${active('/case-studies')}`}>Case Studies</Link>
             <HashLink smooth to="/#pricing" className="text-sm text-white hover:text-yellow-300 transition-colors">Pricing</HashLink>
+            <HashLink smooth to="/#free-checklist" className="text-sm text-yellow-300 font-semibold hover:text-yellow-200 transition-colors">Free Checklist</HashLink>
             <Link to="/apply-to-be-a-guest" className={`text-sm font-semibold transition-colors ${active('/apply-to-be-a-guest') || 'text-yellow-300 hover:text-yellow-200'}`}>Be a Guest</Link>
             <Link to="/contact" className={`text-sm transition-colors ${active('/contact')}`}>Work With Us</Link>
             <Link to="/portal/login" className="bg-yellow-400 text-blue-900 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-yellow-300 transition-colors">
@@ -48,6 +49,7 @@ export default function Navbar() {
               <Link key={path} to={path} onClick={() => setOpen(false)} className="block text-white hover:text-yellow-300 py-2 px-2 text-sm">{label}</Link>
             ))}
             <HashLink smooth to="/#pricing" onClick={() => setOpen(false)} className="block text-white hover:text-yellow-300 py-2 px-2 text-sm">Pricing</HashLink>
+            <HashLink smooth to="/#free-checklist" onClick={() => setOpen(false)} className="block text-yellow-300 font-semibold hover:text-yellow-200 py-2 px-2 text-sm">Free Checklist</HashLink>
             <Link to="/portal/login" onClick={() => setOpen(false)} className="block bg-yellow-400 text-blue-900 px-4 py-2 rounded-lg text-sm font-semibold text-center mt-2">Client Portal</Link>
           </div>
         )}
