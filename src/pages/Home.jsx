@@ -504,7 +504,7 @@ export default function Home() {
                 <div className="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center shrink-0">📧</div>
                 <div>
                   <div className="text-xs text-blue-400">Email</div>
-                  <div className="font-semibold">hello@kajidoricollective.co.uk</div>
+                  <div className="font-semibold">yeukai@kajidoricollective.co.uk</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
