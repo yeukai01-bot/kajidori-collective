@@ -260,13 +260,12 @@ export default function ParticipantDashboard() {
             <p className="text-slate-500 mb-8 text-sm">Here is a summary of your training progress.</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               {[
-                { label: 'Workshop Days', value: workshopRecords.length, icon: '🏫' },
-                { label: 'Certificates Earned', value: certificates.filter(c => c.status === 'issued').length, icon: '🏆' },
-                { label: 'Mentoring Completed', value: mentoring.filter(m => m.status === 'completed').length, icon: '🎯' },
-                { label: 'Mentoring Progress', value: `${mentoring.filter(m => m.status === 'completed').length}/10`, icon: '📈' },
+                { label: 'Workshop Days', value: workshopRecords.length },
+                { label: 'Certificates Earned', value: certificates.filter(c => c.status === 'issued').length },
+                { label: 'Mentoring Completed', value: mentoring.filter(m => m.status === 'completed').length },
+                { label: 'Mentoring Progress', value: `${mentoring.filter(m => m.status === 'completed').length}/10` },
               ].map(stat => (
                 <div key={stat.label} className="bg-white rounded-xl p-5 border border-slate-100 shadow-sm text-center">
-                  <div className="text-2xl mb-1">{stat.icon}</div>
                   <div className="text-2xl font-bold text-blue-900">{stat.value}</div>
                   <div className="text-xs text-slate-500 mt-1">{stat.label}</div>
                 </div>
@@ -276,13 +275,13 @@ export default function ParticipantDashboard() {
               <h3 className="font-semibold text-blue-900 mb-3">Quick Actions</h3>
               <div className="flex flex-wrap gap-3">
                 <button onClick={() => setTab('Check-In')} className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors">
-                  📋 Log Workshop Attendance
+                  Log Workshop Attendance
                 </button>
                 <button onClick={() => setTab('Mentoring')} className="bg-white text-blue-900 border border-blue-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors">
-                  🎯 Mentoring Tracker
+                  Mentoring Tracker
                 </button>
                 <button onClick={() => setTab('Certificates')} className="bg-white text-blue-900 border border-blue-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors">
-                  🏆 View Certificates
+                  View Certificates
                 </button>
               </div>
             </div>
@@ -428,7 +427,9 @@ export default function ParticipantDashboard() {
 
             {certificates.filter(c => c.status === 'issued').length === 0 ? (
               <div className="bg-white rounded-xl p-12 border border-slate-100 text-center">
-                <div className="text-5xl mb-4">🏆</div>
+                <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
+                </div>
                 <h3 className="font-semibold text-slate-700 mb-2">No certificates issued yet</h3>
                 <p className="text-slate-500 text-sm max-w-sm mx-auto">
                   Your administrator will issue your certificate once you have completed your full-day workshop
@@ -437,11 +438,11 @@ export default function ParticipantDashboard() {
                 <div className="mt-6 flex gap-3 justify-center">
                   <button onClick={() => setTab('Check-In')}
                     className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors">
-                    📋 Log Workshop Attendance
+                    Log Workshop Attendance
                   </button>
                   <button onClick={() => setTab('Mentoring')}
                     className="bg-white text-blue-900 border border-blue-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors">
-                    🎯 Mentoring Tracker
+                    Mentoring Tracker
                   </button>
                 </div>
               </div>
@@ -456,7 +457,7 @@ export default function ParticipantDashboard() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition-colors flex items-center gap-2">
-                        🖨️ Download / Print Certificate
+                        Download / Print Certificate
                       </Link>
                     </div>
 
@@ -641,7 +642,9 @@ export default function ParticipantDashboard() {
             <p className="text-slate-500 text-sm mb-6">Your feedback helps us improve the training. All responses go directly to Yeukai at The Kajidori Collective.</p>
             {feedbackDone ? (
               <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
-                <div className="text-4xl mb-3">🙏</div>
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
+                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                </div>
                 <h3 className="font-bold text-green-800 mb-2">Thank you for your feedback!</h3>
                 <p className="text-green-700 text-sm">Your response has been received and will help shape future training.</p>
               </div>

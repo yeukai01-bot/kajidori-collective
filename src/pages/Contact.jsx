@@ -3,10 +3,10 @@ import { useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
 const TABS = [
-  { id: 'consulting', label: 'Strategic Consulting', icon: '🏛️' },
-  { id: 'training', label: 'Mental Health Training', icon: '🧠' },
-  { id: 'mentoring', label: 'Leadership Mentoring', icon: '🎯' },
-  { id: 'ai', label: 'AI Integration Workshop', icon: '🤖', isNew: true },
+  { id: 'consulting', label: 'Strategic Consulting', num: '01' },
+  { id: 'training', label: 'Mental Health Training', num: '02' },
+  { id: 'mentoring', label: 'Leadership Mentoring', num: '03' },
+  { id: 'ai', label: 'AI Integration Workshop', num: '04', isNew: true },
 ]
 
 const FIELDS = {
@@ -110,7 +110,9 @@ export default function Contact() {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
         <div className="bg-white rounded-2xl p-12 text-center max-w-md shadow-sm border border-slate-100">
-          <div className="text-5xl mb-4">✅</div>
+          <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+          </div>
           <h2 className="text-2xl font-bold text-blue-900 mb-3">Application Received!</h2>
           <p className="text-slate-600 mb-6">Thank you for your enquiry. A member of The Kajidori Collective team will be in touch within 2 business days.</p>
           <button onClick={() => setSuccess(false)} className="bg-blue-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-colors">
@@ -142,7 +144,7 @@ export default function Contact() {
               {t.isNew && (
                 <span className="absolute top-1 right-1 bg-yellow-400 text-blue-900 text-[9px] font-bold px-1 rounded-full leading-tight">NEW</span>
               )}
-              <span className="text-lg">{t.icon}</span>
+              <span className="text-xs font-bold opacity-50">{t.num}</span>
               <span className="text-xs leading-tight text-center">{t.label}</span>
             </button>
           ))}
@@ -151,11 +153,11 @@ export default function Contact() {
         {/* Form */}
         <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
           <h2 className="text-xl font-bold text-blue-900 mb-2">
-            {TABS.find(t => t.id === tab)?.icon} {TABS.find(t => t.id === tab)?.label} Enquiry
+            {TABS.find(t => t.id === tab)?.label} Enquiry
           </h2>
           {tab === 'ai' && (
             <p className="text-sm text-blue-600 bg-blue-50 rounded-lg px-4 py-2 mb-5">
-              🤖 <strong>New for 2026.</strong> Be among the first care organisations to integrate AI responsibly — before your competitors.
+              <strong>New for 2026.</strong> Be among the first care organisations to integrate AI responsibly — before your competitors.
             </p>
           )}
 

@@ -76,7 +76,9 @@ export default function Register() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center px-4">
         <div className="bg-white rounded-2xl p-10 text-center max-w-md shadow-xl">
-          <div className="text-5xl mb-4">📧</div>
+          <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+          </div>
           <h2 className="text-2xl font-bold text-blue-900 mb-3">Check Your Email</h2>
           <p className="text-slate-600 mb-2">We have sent a confirmation link to <strong>{form.email}</strong>.</p>
           <p className="text-slate-500 text-sm mb-6">Please click the link in that email to activate your account, then return here to sign in.</p>
@@ -90,7 +92,9 @@ export default function Register() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center px-4">
         <div className="bg-white rounded-2xl p-10 text-center max-w-md shadow-xl">
-          <div className="text-5xl mb-4">✅</div>
+          <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+          </div>
           <h2 className="text-2xl font-bold text-blue-900 mb-3">Registration Successful!</h2>
           <p className="text-slate-600 mb-6">Your account has been created. You can now sign in to access the portal.</p>
           <Link to="/portal/login" className="bg-blue-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-colors inline-block">Sign In Now</Link>

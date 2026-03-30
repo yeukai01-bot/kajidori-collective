@@ -36,7 +36,9 @@ export default function ForgotPassword() {
 
         {sent ? (
           <div className="text-center">
-            <div className="text-4xl mb-4">📧</div>
+            <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+            </div>
             <p className="text-slate-700 mb-6">If an account exists for <strong>{email}</strong>, you will receive a password reset email shortly.</p>
             <Link to="/portal/login" className="text-blue-700 font-medium hover:underline text-sm">← Back to Sign In</Link>
           </div>

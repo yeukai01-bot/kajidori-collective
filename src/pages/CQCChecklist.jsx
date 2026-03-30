@@ -3,11 +3,11 @@ import { useState } from 'react'
 const PHOTO_SMILING = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663231528991/jPaHykWfLrMYEDWA.jpeg'
 
 const FIVE_KEYS = [
-  { key: 'Safe', icon: '🛡️', desc: 'Medication management, safeguarding, risk assessments, incident reporting' },
-  { key: 'Effective', icon: '📊', desc: 'Care planning, staff training, evidence-based practice, outcomes' },
-  { key: 'Caring', icon: '❤️', desc: 'Dignity, person-centred care, emotional support, involvement' },
-  { key: 'Responsive', icon: '⚡', desc: 'Complaints handling, care reviews, meeting individual needs' },
-  { key: 'Well-led', icon: '🏛️', desc: 'Governance, culture, leadership quality, continuous improvement' },
+  { key: 'Safe', num: '01', desc: 'Medication management, safeguarding, risk assessments, incident reporting' },
+  { key: 'Effective', num: '02', desc: 'Care planning, staff training, evidence-based practice, outcomes' },
+  { key: 'Caring', num: '03', desc: 'Dignity, person-centred care, emotional support, involvement' },
+  { key: 'Responsive', num: '04', desc: 'Complaints handling, care reviews, meeting individual needs' },
+  { key: 'Well-led', num: '05', desc: 'Governance, culture, leadership quality, continuous improvement' },
 ]
 
 const SOCIAL_PROOF = [
@@ -76,7 +76,7 @@ export default function CQCChecklist() {
           {/* Left — copy */}
           <div>
             <div className="inline-flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-6">
-              Free Resource · 2026 Edition
+              Free Resource &middot; 2026 Edition
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold leading-[1.1] mb-6">
               Is Your Service Ready<br />
@@ -101,14 +101,14 @@ export default function CQCChecklist() {
 
             {/* Bullet benefits */}
             <ul className="space-y-3 mb-8">
-              {[
+                {[
                 'Covers all 5 CQC Key Questions in full',
                 'Practical action points you can act on today',
                 'Instant download — no waiting, no gatekeeping',
                 'Written by a 20-year sector expert and CQC Registered Manager',
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3 text-blue-100 text-sm">
-                  <span className="text-yellow-400 font-bold mt-0.5 shrink-0">✓</span>
+                  <span className="text-yellow-400 font-bold mt-0.5 shrink-0 text-base leading-none">&#10003;</span>
                   {item}
                 </li>
               ))}
@@ -119,7 +119,9 @@ export default function CQCChecklist() {
           <div className="bg-white rounded-3xl shadow-2xl p-8 text-slate-800">
             {submitted ? (
               <div className="text-center py-6">
-                <div className="text-6xl mb-4">✅</div>
+                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                </div>
                 <h3 className="text-2xl font-extrabold text-blue-900 mb-3">Your checklist is on its way!</h3>
                 <p className="text-slate-600 text-sm mb-4">Check your inbox — and your junk folder just in case.</p>
                 <div className="bg-blue-50 rounded-2xl p-5 mb-4">
@@ -144,12 +146,12 @@ export default function CQCChecklist() {
               <>
                 <div className="text-center mb-6">
                   <div className="inline-block bg-yellow-400 text-blue-900 text-xs font-extrabold uppercase tracking-widest px-4 py-2 rounded-full mb-4">
-                    Free · Instant Download
+                    Free &middot; Instant Download
                   </div>
                   <h2 className="text-2xl font-extrabold text-blue-900 leading-tight mb-2">
                     Get the 2026 CQC<br />Compliance Checklist
                   </h2>
-                  <p className="text-slate-500 text-sm">Enter your email and we'll send it straight to your inbox.</p>
+                  <p className="text-slate-500 text-sm">Enter your email and we&apos;ll send it straight to your inbox.</p>
                 </div>
 
                 {/* Brevo iframe form — most reliable embed method */}
@@ -202,7 +204,7 @@ export default function CQCChecklist() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {FIVE_KEYS.map((k) => (
               <div key={k.key} className="bg-white/5 border border-white/10 rounded-2xl p-5 hover:border-yellow-400/40 transition-colors">
-                <div className="text-3xl mb-3">{k.icon}</div>
+                <div className="text-xs font-bold text-yellow-400/60 tracking-widest mb-3">{k.num}</div>
                 <div className="font-extrabold text-yellow-400 text-lg mb-2">{k.key}</div>
                 <p className="text-blue-200 text-xs leading-relaxed">{k.desc}</p>
               </div>
@@ -257,7 +259,7 @@ export default function CQCChecklist() {
           <div className="grid md:grid-cols-3 gap-6">
             {SOCIAL_PROOF.map((t, i) => (
               <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                <div className="text-yellow-400 text-2xl mb-4">"</div>
+                <div className="text-yellow-400 text-3xl font-serif leading-none mb-4 select-none">&ldquo;</div>
                 <p className="text-blue-100 text-sm leading-relaxed mb-5 italic">"{t.quote}"</p>
                 <div>
                   <div className="font-bold text-white text-sm">{t.name}</div>

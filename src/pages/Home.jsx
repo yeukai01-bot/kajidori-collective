@@ -22,7 +22,7 @@ const sectorStats = [
 const services = [
   {
     title: 'Strategic Consulting',
-    icon: '🏛️',
+    icon: null, num: '01',
     tagline: 'Virtual Compliance & Development Director',
     desc: 'Yeukai partners with health and social care providers to navigate CQC compliance, drive service improvements, and implement robust strategies for organisational growth — providing the strategic oversight needed to build resilient, future-proof services.',
     link: '/contact?type=consulting',
@@ -31,7 +31,7 @@ const services = [
   },
   {
     title: 'Mental Health & Complex Needs Training',
-    icon: '🧠',
+    icon: null, num: '02',
     tagline: 'Flagship Certified Group Programme',
     desc: 'Certified, group-based training for professionals working in the mental health and complex needs space. Combining digital accessibility with cutting-edge content, the programme equips teams across the country with the skills to deliver outstanding care.',
     link: '/contact?type=training',
@@ -40,7 +40,7 @@ const services = [
   },
   {
     title: 'Leadership Mentoring',
-    icon: '🎯',
+    icon: null, num: '03',
     tagline: 'For CEOs, Registered Managers & Operations Directors',
     desc: 'A structured coaching and mentoring programme designed specifically for the leaders who shape the sector — providing practical wisdom and personalised guidance to cultivate the critical leadership qualities needed to inspire teams and drive operational excellence.',
     link: '/contact?type=mentoring',
@@ -49,7 +49,7 @@ const services = [
   },
   {
     title: 'AI Integration for Social Care',
-    icon: '🤖',
+    icon: null, num: '04',
     tagline: 'New for 2026 — First Mover Advantage',
     desc: 'Half-day and full-day workshops helping care providers understand, evaluate, and implement AI tools responsibly. Covers AI for care documentation, CQC inspection readiness, responsible AI governance, and staff wellbeing applications.',
     link: '/contact?type=consulting',
@@ -291,7 +291,7 @@ export default function Home() {
                 {s.highlight && (
                   <span className="absolute top-4 right-4 bg-blue-900 text-white text-xs font-bold px-2 py-1 rounded-full">Most Popular</span>
                 )}
-                <div className="text-4xl mb-5">{s.icon}</div>
+                <div className="text-xs font-bold text-yellow-500/70 tracking-widest mb-5">{s.num}</div>
                 <p className="text-yellow-500 text-xs font-bold uppercase tracking-wider mb-2">{s.tagline}</p>
                 <h3 className="text-lg font-extrabold text-blue-900 mb-3 leading-snug">{s.title}</h3>
                 <p className="text-slate-600 text-sm leading-relaxed flex-1 mb-6">{s.desc}</p>
@@ -519,21 +519,27 @@ export default function Home() {
             </p>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center shrink-0">📧</div>
+                <div className="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center shrink-0">
+                  <svg className="w-5 h-5 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                </div>
                 <div>
                   <div className="text-xs text-blue-400">Email</div>
                   <div className="font-semibold">yeukai@kajidoricollective.co.uk</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center shrink-0">💼</div>
+                <div className="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center shrink-0">
+                  <svg className="w-5 h-5 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                </div>
                 <div>
                   <div className="text-xs text-blue-400">LinkedIn</div>
                   <div className="font-semibold">The Kajidori Collective</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center shrink-0">🎙️</div>
+                 <div className="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center shrink-0">
+                  <svg className="w-5 h-5 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                </div>
                 <div>
                   <div className="text-xs text-blue-400">Podcast</div>
                   <div className="font-semibold">Yeukai Business Show</div>
@@ -545,7 +551,9 @@ export default function Home() {
           <div className="bg-white rounded-3xl p-8 text-slate-800">
             {enquiryDone ? (
               <div className="text-center py-8">
-                <div className="text-5xl mb-4">✅</div>
+                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                </div>
                 <h3 className="text-xl font-extrabold text-blue-900 mb-2">Thank you, {enquiry.name ? enquiry.name.split(' ')[0] : 'you'}!</h3>
                 <p className="text-slate-700 text-sm font-semibold mb-3">Your enquiry has been received.</p>
                 <p className="text-slate-600 text-sm mb-5">We're now taking you to book your complimentary discovery call — so you can secure your slot straight away.</p>
