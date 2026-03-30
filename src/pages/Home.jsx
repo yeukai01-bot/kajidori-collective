@@ -114,6 +114,19 @@ export default function Home() {
   const [enquiryLoading, setEnquiryLoading] = useState(false)
   const [enquiryDone, setEnquiryDone] = useState(false)
 
+  // Map service selection to the most relevant Trafft booking URL
+  const TRAFFT_URLS = {
+    'CQC Readiness Intensive': 'https://tfft.io/XcH1Q2c',
+    'Mental Health & Safeguarding Training': 'https://tfft.io/WLFOm6F',
+    'The Kajidori Leadership Programme': 'https://tfft.io/GeGafLM',
+    '1:1 Executive Mentoring': 'https://tfft.io/GeGafLM',
+    'AI Integration Workshop': 'https://tfft.io/1jGUwek',
+    'Strategic Consulting': 'https://tfft.io/rggNtyy',
+    default: 'https://tfft.io/CRIkyvF',
+  }
+
+  const getBookingUrl = (service) => TRAFFT_URLS[service] || TRAFFT_URLS.default
+
   useEffect(() => {
     supabase.from('reviews_kajidori').select('*').eq('approved', true).order('approved_at', { ascending: false }).limit(6)
       .then(({ data }) => setApprovedReviews(data || []))
@@ -134,6 +147,11 @@ export default function Home() {
     } catch (_) {}
     setEnquiryLoading(false)
     setEnquiryDone(true)
+    // Redirect to the relevant Trafft booking page after a short delay
+    // so the user sees the thank-you message before being taken to book
+    setTimeout(() => {
+      window.location.href = getBookingUrl(enquiry.service)
+    }, 3000)
   }
 
   return (
@@ -528,8 +546,17 @@ export default function Home() {
             {enquiryDone ? (
               <div className="text-center py-8">
                 <div className="text-5xl mb-4">✅</div>
-                <h3 className="text-xl font-extrabold text-blue-900 mb-2">Thank you, {enquiry.name || 'you'}!</h3>
-                <p className="text-slate-600 text-sm">We'll be in touch within one business day to arrange your complimentary discovery call.</p>
+                <h3 className="text-xl font-extrabold text-blue-900 mb-2">Thank you, {enquiry.name ? enquiry.name.split(' ')[0] : 'you'}!</h3>
+                <p className="text-slate-700 text-sm font-semibold mb-3">Your enquiry has been received.</p>
+                <p className="text-slate-600 text-sm mb-5">We're now taking you to book your complimentary discovery call — so you can secure your slot straight away.</p>
+                <div className="flex items-center justify-center gap-2 text-blue-700 text-xs font-medium">
+                  <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                  </svg>
+                  Redirecting to your booking page…
+                </div>
+                <p className="text-slate-400 text-xs mt-4">Not redirected? <a href={getBookingUrl(enquiry.service)} className="text-blue-600 underline font-medium">Click here to book your call →</a></p>
               </div>
             ) : (
               <>
