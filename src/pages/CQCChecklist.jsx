@@ -31,7 +31,7 @@ export default function CQCChecklist() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    // Submit to Brevo via the embedded form action
+    // Submit to Brevo mailing list
     try {
       await fetch('https://api.brevo.com/v3/contacts', {
         method: 'POST',
@@ -41,6 +41,14 @@ export default function CQCChecklist() {
     } catch (_) {}
     setLoading(false)
     setSubmitted(true)
+    // Trigger immediate PDF download
+    const link = document.createElement('a')
+    link.href = '/CQC_Compliance_Checklist_2026.pdf'
+    link.download = 'CQC_Compliance_Checklist_2026.pdf'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    // Redirect to booking page after 4 seconds
     setTimeout(() => {
       window.location.href = 'https://tfft.io/CRIkyvF'
     }, 4000)
@@ -122,8 +130,8 @@ export default function CQCChecklist() {
                 <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
                 </div>
-                <h3 className="text-2xl font-extrabold text-blue-900 mb-3">Your checklist is on its way!</h3>
-                <p className="text-slate-600 text-sm mb-4">Check your inbox — and your junk folder just in case.</p>
+                <h3 className="text-2xl font-extrabold text-blue-900 mb-3">Your checklist is downloading now!</h3>
+                <p className="text-slate-600 text-sm mb-4">Your PDF has started downloading automatically. Check your Downloads folder.</p>
                 <div className="bg-blue-50 rounded-2xl p-5 mb-4">
                   <p className="text-blue-900 font-bold text-sm mb-1">One more step →</p>
                   <p className="text-slate-600 text-xs mb-3">While you wait, book your free 30-minute CQC Strategy Call with Yeukai. He'll review your specific service and tell you exactly what to fix first.</p>
