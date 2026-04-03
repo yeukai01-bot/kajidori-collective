@@ -113,6 +113,34 @@ export default function Home() {
   const [enquiry, setEnquiry] = useState({ name: '', org: '', email: '', service: '', message: '' })
   const [enquiryLoading, setEnquiryLoading] = useState(false)
   const [enquiryDone, setEnquiryDone] = useState(false)
+  const [checklistFirstName, setChecklistFirstName] = useState('')
+  const [checklistEmail, setChecklistEmail] = useState('')
+  const [checklistLoading, setChecklistLoading] = useState(false)
+  const [checklistDone, setChecklistDone] = useState(false)
+  const handleChecklistSubmit = async (e) => {
+    e.preventDefault()
+    setChecklistLoading(true)
+    try {
+      await fetch('https://api.brevo.com/v3/contacts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: checklistEmail,
+          attributes: { FIRSTNAME: checklistFirstName },
+          listIds: [2],
+          updateEnabled: true,
+        }),
+      })
+    } catch (_) {}
+    setChecklistLoading(false)
+    setChecklistDone(true)
+    const link = document.createElement('a')
+    link.href = '/CQC_Compliance_Checklist_2026.pdf'
+    link.download = 'CQC_Compliance_Checklist_2026.pdf'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   // Map service selection to the most relevant Trafft booking URL
   const TRAFFT_URLS = {
@@ -662,19 +690,74 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right — Brevo embedded form */}
+            {/* Right — Native React form, triggers PDF download */}
             <div className="flex justify-center">
-              <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden">
-                <iframe
-                  width="100%"
-                  height="420"
-                  src="https://4d7710d7.sibforms.com/serve/MUIFAOg--2t3JsWa_5_C2bZZk5ZEsaWqWVeuqP9FUb0hcUY6eInEU_U2cjkUpmPf4E2YVkF7_lnoIadohZ4rbG111ya3U66V_iEHikRSUHXk--oPdhB5i3DiUhrCVQEDRGZOOUkpM3f42W_udlqv8DQ2hODTcgDg-DG-SDRELOBvLWVbfTKuzKkyZq8_8c-USjFZBCHwSqH_TpEC"
-                  frameBorder="0"
-                  scrolling="auto"
-                  allowFullScreen
-                  style={{ display: 'block' }}
-                  title="Download Your Free 2026 CQC Compliance Checklist"
-                />
+              <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8">
+                {checklistDone ? (
+                  <div className="text-center py-6">
+                    <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                    </div>
+                    <h3 className="text-xl font-extrabold text-blue-900 mb-2">
+                      {checklistFirstName ? `${checklistFirstName}, your checklist is downloading!` : 'Your checklist is downloading!'}
+                    </h3>
+                    <p className="text-slate-600 text-sm mb-4">Check your Downloads folder. Book a free call to get personalised advice for your service.</p>
+                    <a
+                      href="https://tfft.io/CRIkyvF"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block bg-blue-900 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-blue-800 transition-colors"
+                    >
+                      Book My Free Strategy Call →
+                    </a>
+                  </div>
+                ) : (
+                  <>
+                    <div className="text-center mb-6">
+                      <div className="inline-block bg-yellow-400 text-blue-900 text-xs font-extrabold uppercase tracking-widest px-4 py-2 rounded-full mb-4">
+                        Free · Instant Download
+                      </div>
+                      <h3 className="text-xl font-extrabold text-blue-900 leading-tight mb-2">
+                        Download Your Free 2026 CQC<br />Compliance Checklist
+                      </h3>
+                      <p className="text-slate-500 text-sm">Enter your details — your PDF downloads instantly.</p>
+                    </div>
+                    <form onSubmit={handleChecklistSubmit} className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">First Name</label>
+                        <input
+                          type="text"
+                          required
+                          value={checklistFirstName}
+                          onChange={e => setChecklistFirstName(e.target.value)}
+                          placeholder="e.g. Jane"
+                          className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Work Email Address</label>
+                        <input
+                          type="email"
+                          required
+                          value={checklistEmail}
+                          onChange={e => setChecklistEmail(e.target.value)}
+                          placeholder="you@yourorganisation.co.uk"
+                          className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={checklistLoading}
+                        className="w-full bg-blue-900 text-white font-bold py-4 rounded-xl text-sm hover:bg-blue-800 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                      >
+                        {checklistLoading ? 'Preparing your download…' : (
+                          <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> Download Free Checklist Now</>
+                        )}
+                      </button>
+                    </form>
+                    <p className="text-xs text-slate-400 text-center mt-4">No spam. Instant download. Written by a 20-year sector expert.</p>
+                  </>
+                )}
               </div>
             </div>
 
