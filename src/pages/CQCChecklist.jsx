@@ -159,22 +159,35 @@ export default function CQCChecklist() {
                   <h2 className="text-2xl font-extrabold text-blue-900 leading-tight mb-2">
                     Get the 2026 CQC<br />Compliance Checklist
                   </h2>
-                  <p className="text-slate-500 text-sm">Enter your email and we&apos;ll send it straight to your inbox.</p>
+                  <p className="text-slate-500 text-sm">Enter your email below — your PDF downloads instantly.</p>
                 </div>
 
-                {/* Brevo iframe form — most reliable embed method */}
-                <div className="overflow-hidden rounded-2xl border border-slate-100">
-                  <iframe
-                    width="100%"
-                    height="280"
-                    src="https://4d7710d7.sibforms.com/serve/MUIFAOg--2t3JsWa_5_C2bZZk5ZEsaWqWVeuqP9FUb0hcUY6eInEU_U2cjkUpmPf4E2YVkF7_lnoIadohZ4rbG111ya3U66V_iEHikRSUHXk--oPdhB5i3DiUhrCVQEDRGZOOUkpM3f42W_udlqv8DQ2hODTcgDg-DG-SDRELOBvLWVbfTKuzKkyZq8_8c-USjFZBCHwSqH_TpEC"
-                    frameBorder="0"
-                    scrolling="auto"
-                    allowFullScreen
-                    style={{ display: 'block' }}
-                    title="Download Your Free 2026 CQC Compliance Checklist"
-                  />
-                </div>
+                {/* Native React form — triggers immediate PDF download */}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label htmlFor="email-input" className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Work Email Address</label>
+                    <input
+                      id="email-input"
+                      type="email"
+                      required
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      placeholder="you@yourorganisation.co.uk"
+                      className="w-full border border-slate-200 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-blue-900 text-white font-bold py-4 rounded-xl text-sm hover:bg-blue-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {loading ? (
+                      <><svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Preparing your download…</>
+                    ) : (
+                      <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> Download Free Checklist Now</>
+                    )}
+                  </button>
+                </form>
 
                 <p className="text-xs text-slate-400 text-center mt-4">
                   No spam. No sales pitch. Just the checklist — and a follow-up from Yeukai personally.
