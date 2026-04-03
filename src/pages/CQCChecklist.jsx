@@ -22,21 +22,32 @@ const URGENCY_STATS = [
   { value: '£0', label: 'cost to download — but the cost of being unprepared is enormous', source: '' },
 ]
 
+// Brand colours matching kajidoricollective.co.uk exactly:
+// Primary navy:  #1e3a8a  (blue-800)
+// Darker navy:   #172554  (blue-950)
+// Yellow accent: #facc15  (yellow-400)
+// White sections: #f8fafc (slate-50)
+
 export default function CQCChecklist() {
+  const [firstName, setFirstName] = useState('')
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [openFaq, setOpenFaq] = useState(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    // Submit to Brevo mailing list
+    // Submit to Brevo — list #2 (CQC Checklist Downloads), with first name attribute
     try {
       await fetch('https://api.brevo.com/v3/contacts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, listIds: [2], updateEnabled: true }),
+        body: JSON.stringify({
+          email,
+          attributes: { FIRSTNAME: firstName },
+          listIds: [2],
+          updateEnabled: true,
+        }),
       })
     } catch (_) {}
     setLoading(false)
@@ -55,22 +66,23 @@ export default function CQCChecklist() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a1628] text-white overflow-x-hidden font-sans">
+    <div className="min-h-screen text-white overflow-x-hidden font-sans" style={{ backgroundColor: '#1e3a8a' }}>
 
       {/* ── HEADER ── */}
-      <header className="border-b border-white/10 px-6 py-4">
+      <header style={{ backgroundColor: '#172554', borderBottom: '1px solid rgba(255,255,255,0.1)' }} className="px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-yellow-400 flex items-center justify-center">
-              <span className="text-blue-900 font-extrabold text-lg leading-none">K</span>
+            <div className="w-9 h-9 rounded-full flex items-center justify-center font-extrabold text-lg leading-none" style={{ backgroundColor: '#facc15', color: '#172554' }}>
+              K
             </div>
-            <span className="font-bold text-sm tracking-wide text-white/90">The Kajidori Collective</span>
+            <span className="font-bold text-sm tracking-wide text-white">The Kajidori Collective</span>
           </div>
           <a
             href="https://tfft.io/CRIkyvF"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:inline-block bg-yellow-400 text-blue-900 text-xs font-bold px-5 py-2.5 rounded-lg hover:bg-yellow-300 transition-colors"
+            className="hidden sm:inline-block text-xs font-bold px-5 py-2.5 rounded-lg transition-colors"
+            style={{ backgroundColor: '#facc15', color: '#172554' }}
           >
             Book Free Strategy Call →
           </a>
@@ -78,17 +90,20 @@ export default function CQCChecklist() {
       </header>
 
       {/* ── HERO ── */}
-      <section className="px-6 pt-16 pb-12">
+      <section className="px-6 pt-16 pb-12" style={{ backgroundColor: '#1e3a8a' }}>
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
 
           {/* Left — copy */}
           <div>
-            <div className="inline-flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-6">
+            <div
+              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-6"
+              style={{ backgroundColor: 'rgba(250,204,21,0.15)', border: '1px solid rgba(250,204,21,0.4)', color: '#facc15' }}
+            >
               Free Resource &middot; 2026 Edition
             </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold leading-[1.1] mb-6">
+            <h1 className="text-4xl md:text-5xl font-extrabold leading-[1.1] mb-6 text-white">
               Is Your Service Ready<br />
-              <span className="text-yellow-400">for a CQC Inspection?</span>
+              <span style={{ color: '#facc15' }}>for a CQC Inspection?</span>
             </h1>
             <p className="text-blue-200 text-lg leading-relaxed mb-4">
               Most care providers only find out they're not inspection-ready <strong className="text-white">when the inspector is already at the door.</strong>
@@ -100,23 +115,23 @@ export default function CQCChecklist() {
             {/* Urgency stats */}
             <div className="grid grid-cols-3 gap-3 mb-8">
               {URGENCY_STATS.map((s, i) => (
-                <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                  <div className="text-yellow-400 font-extrabold text-xl mb-1">{s.value}</div>
-                  <div className="text-blue-300 text-xs leading-snug">{s.label}</div>
+                <div key={i} className="rounded-xl p-4 text-center" style={{ backgroundColor: 'rgba(23,37,84,0.7)', border: '1px solid rgba(255,255,255,0.12)' }}>
+                  <div className="font-extrabold text-xl mb-1" style={{ color: '#facc15' }}>{s.value}</div>
+                  <div className="text-blue-200 text-xs leading-snug">{s.label}</div>
                 </div>
               ))}
             </div>
 
             {/* Bullet benefits */}
             <ul className="space-y-3 mb-8">
-                {[
+              {[
                 'Covers all 5 CQC Key Questions in full',
                 'Practical action points you can act on today',
                 'Instant download — no waiting, no gatekeeping',
                 'Written by a 20-year sector expert and CQC Registered Manager',
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3 text-blue-100 text-sm">
-                  <span className="text-yellow-400 font-bold mt-0.5 shrink-0 text-base leading-none">&#10003;</span>
+                  <span className="font-bold mt-0.5 shrink-0 text-base leading-none" style={{ color: '#facc15' }}>&#10003;</span>
                   {item}
                 </li>
               ))}
@@ -124,20 +139,23 @@ export default function CQCChecklist() {
           </div>
 
           {/* Right — opt-in card */}
-          <div className="bg-white rounded-3xl shadow-2xl p-8 text-slate-800">
+          <div className="rounded-3xl shadow-2xl p-8" style={{ backgroundColor: '#ffffff', color: '#172554' }}>
             {submitted ? (
               <div className="text-center py-6">
                 <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
                 </div>
-                <h3 className="text-2xl font-extrabold text-blue-900 mb-3">Your checklist is downloading now!</h3>
+                <h3 className="text-2xl font-extrabold mb-3" style={{ color: '#172554' }}>
+                  {firstName ? `${firstName}, your checklist is downloading!` : 'Your checklist is downloading now!'}
+                </h3>
                 <p className="text-slate-600 text-sm mb-4">Your PDF has started downloading automatically. Check your Downloads folder.</p>
-                <div className="bg-blue-50 rounded-2xl p-5 mb-4">
-                  <p className="text-blue-900 font-bold text-sm mb-1">One more step →</p>
+                <div className="rounded-2xl p-5 mb-4" style={{ backgroundColor: '#f0f4ff' }}>
+                  <p className="font-bold text-sm mb-1" style={{ color: '#172554' }}>One more step →</p>
                   <p className="text-slate-600 text-xs mb-3">While you wait, book your free 30-minute CQC Strategy Call with Yeukai. He'll review your specific service and tell you exactly what to fix first.</p>
                   <a
                     href="https://tfft.io/CRIkyvF"
-                    className="block w-full bg-blue-900 text-white text-center py-3 rounded-xl font-bold text-sm hover:bg-blue-800 transition-colors"
+                    className="block w-full text-white text-center py-3 rounded-xl font-bold text-sm transition-colors"
+                    style={{ backgroundColor: '#1e3a8a' }}
                   >
                     Book My Free Strategy Call →
                   </a>
@@ -153,19 +171,39 @@ export default function CQCChecklist() {
             ) : (
               <>
                 <div className="text-center mb-6">
-                  <div className="inline-block bg-yellow-400 text-blue-900 text-xs font-extrabold uppercase tracking-widest px-4 py-2 rounded-full mb-4">
+                  <div
+                    className="inline-block text-xs font-extrabold uppercase tracking-widest px-4 py-2 rounded-full mb-4"
+                    style={{ backgroundColor: '#facc15', color: '#172554' }}
+                  >
                     Free &middot; Instant Download
                   </div>
-                  <h2 className="text-2xl font-extrabold text-blue-900 leading-tight mb-2">
+                  <h2 className="text-2xl font-extrabold leading-tight mb-2" style={{ color: '#172554' }}>
                     Get the 2026 CQC<br />Compliance Checklist
                   </h2>
-                  <p className="text-slate-500 text-sm">Enter your email below — your PDF downloads instantly.</p>
+                  <p className="text-slate-500 text-sm">Enter your details below — your PDF downloads instantly.</p>
                 </div>
 
-                {/* Native React form — triggers immediate PDF download */}
+                {/* Native React form — first name + email, triggers immediate PDF download */}
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label htmlFor="email-input" className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Work Email Address</label>
+                    <label htmlFor="firstname-input" className="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style={{ color: '#475569' }}>First Name</label>
+                    <input
+                      id="firstname-input"
+                      type="text"
+                      required
+                      value={firstName}
+                      onChange={e => setFirstName(e.target.value)}
+                      placeholder="e.g. Jane"
+                      className="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 placeholder-slate-400"
+                      style={{
+                        border: '1px solid #e2e8f0',
+                        color: '#172554',
+                        backgroundColor: '#ffffff',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email-input" className="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style={{ color: '#475569' }}>Work Email Address</label>
                     <input
                       id="email-input"
                       type="email"
@@ -173,13 +211,19 @@ export default function CQCChecklist() {
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       placeholder="you@yourorganisation.co.uk"
-                      className="w-full border border-slate-200 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400"
+                      className="w-full rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 placeholder-slate-400"
+                      style={{
+                        border: '1px solid #e2e8f0',
+                        color: '#172554',
+                        backgroundColor: '#ffffff',
+                      }}
                     />
                   </div>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-blue-900 text-white font-bold py-4 rounded-xl text-sm hover:bg-blue-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full text-white font-bold py-4 rounded-xl text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    style={{ backgroundColor: '#1e3a8a' }}
                   >
                     {loading ? (
                       <><svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Preparing your download…</>
@@ -189,17 +233,18 @@ export default function CQCChecklist() {
                   </button>
                 </form>
 
-                <p className="text-xs text-slate-400 text-center mt-4">
+                <p className="text-xs text-center mt-4" style={{ color: '#94a3b8' }}>
                   No spam. No sales pitch. Just the checklist — and a follow-up from Yeukai personally.
                 </p>
 
-                <div className="mt-5 pt-5 border-t border-slate-100 text-center">
-                  <p className="text-xs text-slate-500 mb-3">Or skip straight to booking:</p>
+                <div className="mt-5 pt-5 text-center" style={{ borderTop: '1px solid #f1f5f9' }}>
+                  <p className="text-xs mb-3" style={{ color: '#64748b' }}>Or skip straight to booking:</p>
                   <a
                     href="https://tfft.io/CRIkyvF"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block bg-yellow-400 text-blue-900 px-6 py-3 rounded-xl font-bold text-sm hover:bg-yellow-300 transition-colors"
+                    className="inline-block px-6 py-3 rounded-xl font-bold text-sm transition-colors"
+                    style={{ backgroundColor: '#facc15', color: '#172554' }}
                   >
                     Book My Free 30-Min Strategy Call →
                   </a>
@@ -210,12 +255,15 @@ export default function CQCChecklist() {
         </div>
       </section>
 
+      {/* ── YELLOW DIVIDER BAR (matches main site) ── */}
+      <div style={{ height: '6px', backgroundColor: '#facc15' }} />
+
       {/* ── WHAT'S INSIDE ── */}
-      <section className="px-6 py-16 bg-white/5 border-y border-white/10">
+      <section className="px-6 py-16" style={{ backgroundColor: '#172554' }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-yellow-400 font-bold text-xs uppercase tracking-widest mb-3">What's Inside</p>
-            <h2 className="text-3xl md:text-4xl font-extrabold">
+            <p className="font-bold text-xs uppercase tracking-widest mb-3" style={{ color: '#facc15' }}>What's Inside</p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white">
               The Checklist Covers Every CQC Key Question
             </h2>
             <p className="text-blue-200 mt-4 max-w-2xl mx-auto text-base">
@@ -224,9 +272,9 @@ export default function CQCChecklist() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {FIVE_KEYS.map((k) => (
-              <div key={k.key} className="bg-white/5 border border-white/10 rounded-2xl p-5 hover:border-yellow-400/40 transition-colors">
-                <div className="text-xs font-bold text-yellow-400/60 tracking-widest mb-3">{k.num}</div>
-                <div className="font-extrabold text-yellow-400 text-lg mb-2">{k.key}</div>
+              <div key={k.key} className="rounded-2xl p-5 transition-colors" style={{ backgroundColor: 'rgba(30,58,138,0.5)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="text-xs font-bold tracking-widest mb-3" style={{ color: 'rgba(250,204,21,0.6)' }}>{k.num}</div>
+                <div className="font-extrabold text-lg mb-2" style={{ color: '#facc15' }}>{k.key}</div>
                 <p className="text-blue-200 text-xs leading-relaxed">{k.desc}</p>
               </div>
             ))}
@@ -235,35 +283,35 @@ export default function CQCChecklist() {
       </section>
 
       {/* ── AUTHORITY / ABOUT YEUKAI ── */}
-      <section className="px-6 py-16">
+      <section className="px-6 py-16" style={{ backgroundColor: '#f8fafc' }}>
         <div className="max-w-5xl mx-auto grid md:grid-cols-5 gap-12 items-center">
           <div className="md:col-span-2 flex justify-center">
             <div className="relative">
-              <div className="w-64 h-64 rounded-3xl overflow-hidden border-4 border-yellow-400/30 shadow-2xl">
+              <div className="w-64 h-64 rounded-3xl overflow-hidden shadow-2xl" style={{ border: '4px solid rgba(250,204,21,0.4)' }}>
                 <img
                   src={PHOTO_SMILING}
                   alt="Yeukai Kajidori"
                   className="w-full h-full object-cover object-top"
                 />
               </div>
-              <div className="absolute -bottom-4 -right-4 bg-yellow-400 text-blue-900 rounded-2xl px-4 py-3 shadow-xl">
+              <div className="absolute -bottom-4 -right-4 rounded-2xl px-4 py-3 shadow-xl" style={{ backgroundColor: '#facc15', color: '#172554' }}>
                 <div className="font-extrabold text-sm">20+ Years</div>
                 <div className="text-xs font-medium">Sector Experience</div>
               </div>
             </div>
           </div>
           <div className="md:col-span-3">
-            <p className="text-yellow-400 font-bold text-xs uppercase tracking-widest mb-4">Written By</p>
-            <h2 className="text-3xl font-extrabold mb-4">Yeukai Kajidori</h2>
-            <p className="text-blue-200 text-base leading-relaxed mb-4">
-              Yeukai is a <strong className="text-white">CQC Registered Manager, MBA-qualified strategist, and Amazon bestselling author</strong> with over 20 years in health and social care leadership. He has launched five new care facilities in two years, secured over £2.5M in contracts annually, and interviewed 584+ global leaders on the Yeukai Business Show.
+            <p className="font-bold text-xs uppercase tracking-widest mb-4" style={{ color: '#facc15' }}>Written By</p>
+            <h2 className="text-3xl font-extrabold mb-4" style={{ color: '#172554' }}>Yeukai Kajidori</h2>
+            <p className="text-slate-600 text-base leading-relaxed mb-4">
+              Yeukai is a <strong style={{ color: '#172554' }}>CQC Registered Manager, MBA-qualified strategist, and Amazon bestselling author</strong> with over 20 years in health and social care leadership. He has launched five new care facilities in two years, secured over £2.5M in contracts annually, and interviewed 584+ global leaders on the Yeukai Business Show.
             </p>
-            <p className="text-blue-200 text-base leading-relaxed mb-6">
+            <p className="text-slate-600 text-base leading-relaxed mb-6">
               This checklist is not a generic template. It is built from real inspection experience — the kind that comes from sitting on both sides of the table.
             </p>
             <div className="flex flex-wrap gap-2">
               {['MBA — Change Management', 'Level 7 Strategic Leadership', 'CQC Registered Manager', 'Amazon Bestselling Author'].map(c => (
-                <span key={c} className="bg-white/10 text-blue-200 text-xs px-3 py-1.5 rounded-full border border-white/10">{c}</span>
+                <span key={c} className="text-xs px-3 py-1.5 rounded-full" style={{ backgroundColor: '#e0e7ff', color: '#1e3a8a', border: '1px solid #c7d2fe' }}>{c}</span>
               ))}
             </div>
           </div>
@@ -271,20 +319,20 @@ export default function CQCChecklist() {
       </section>
 
       {/* ── SOCIAL PROOF ── */}
-      <section className="px-6 py-16 bg-white/5 border-y border-white/10">
+      <section className="px-6 py-16" style={{ backgroundColor: '#1e3a8a' }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-yellow-400 font-bold text-xs uppercase tracking-widest mb-3">What Others Are Saying</p>
-            <h2 className="text-3xl font-extrabold">Care Providers Across the UK Trust This Resource</h2>
+            <p className="font-bold text-xs uppercase tracking-widest mb-3" style={{ color: '#facc15' }}>What Others Are Saying</p>
+            <h2 className="text-3xl font-extrabold text-white">Care Providers Across the UK Trust This Resource</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {SOCIAL_PROOF.map((t, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                <div className="text-yellow-400 text-3xl font-serif leading-none mb-4 select-none">&ldquo;</div>
+              <div key={i} className="rounded-2xl p-6" style={{ backgroundColor: 'rgba(23,37,84,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="text-3xl font-serif leading-none mb-4 select-none" style={{ color: '#facc15' }}>&ldquo;</div>
                 <p className="text-blue-100 text-sm leading-relaxed mb-5 italic">"{t.quote}"</p>
                 <div>
                   <div className="font-bold text-white text-sm">{t.name}</div>
-                  <div className="text-blue-400 text-xs">{t.org}</div>
+                  <div className="text-blue-300 text-xs">{t.org}</div>
                 </div>
               </div>
             ))}
@@ -293,14 +341,17 @@ export default function CQCChecklist() {
       </section>
 
       {/* ── BOTTOM CTA ── */}
-      <section className="px-6 py-20">
+      <section className="px-6 py-20" style={{ backgroundColor: '#172554' }}>
         <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-block bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-6">
+          <div
+            className="inline-block text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-6"
+            style={{ backgroundColor: 'rgba(250,204,21,0.15)', border: '1px solid rgba(250,204,21,0.4)', color: '#facc15' }}
+          >
             Free · No Commitment · Instant Access
           </div>
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight text-white">
             Don't Wait for the Inspector<br />
-            <span className="text-yellow-400">to Tell You What's Wrong.</span>
+            <span style={{ color: '#facc15' }}>to Tell You What's Wrong.</span>
           </h2>
           <p className="text-blue-200 text-lg leading-relaxed mb-10 max-w-xl mx-auto">
             Download the checklist today. Know exactly where you stand. Then book a free call with Yeukai and get a personalised action plan for your service.
@@ -309,7 +360,8 @@ export default function CQCChecklist() {
             <a
               href="#top"
               onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-              className="bg-yellow-400 text-blue-900 px-10 py-5 rounded-xl font-extrabold text-base hover:bg-yellow-300 transition-colors"
+              className="px-10 py-5 rounded-xl font-extrabold text-base transition-colors"
+              style={{ backgroundColor: '#facc15', color: '#172554' }}
             >
               Get the Free Checklist →
             </a>
@@ -317,7 +369,8 @@ export default function CQCChecklist() {
               href="https://tfft.io/CRIkyvF"
               target="_blank"
               rel="noopener noreferrer"
-              className="border-2 border-white/30 text-white px-10 py-5 rounded-xl font-bold text-base hover:border-yellow-400 hover:text-yellow-400 transition-colors"
+              className="px-10 py-5 rounded-xl font-bold text-base transition-colors text-white"
+              style={{ border: '2px solid rgba(255,255,255,0.3)' }}
             >
               Book Free Strategy Call
             </a>
@@ -329,11 +382,11 @@ export default function CQCChecklist() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="border-t border-white/10 px-6 py-8">
+      <footer className="px-6 py-8" style={{ backgroundColor: '#172554', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-blue-400">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center">
-              <span className="text-blue-900 font-extrabold text-xs">K</span>
+            <div className="w-6 h-6 rounded-full flex items-center justify-center font-extrabold text-xs" style={{ backgroundColor: '#facc15', color: '#172554' }}>
+              K
             </div>
             <span>© 2026 The Kajidori Collective · All rights reserved</span>
           </div>
