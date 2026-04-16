@@ -94,6 +94,20 @@ export default function Contact() {
           status: 'new',
         }])
       if (dbError) console.warn('DB save failed:', dbError.message)
+      if (tab === 'consulting') {
+        fetch('https://hook.eu1.make.com/q1kftkq4u8w4sodx7n8k1esos1wam7rj', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            full_name: form.fullName,
+            email: form.email,
+            organisation_name: form.organisation || '',
+            phone: form.phone || '',
+            message: 'Job title: ' + (form.jobTitle || '') + ' | Challenge: ' + (form.challenge || ''),
+            source: 'website-contact-form'
+          })
+        }).catch(() => {})
+      }
       setSuccess(true)
       setForm({})
     } catch (err) {
