@@ -80,6 +80,8 @@ const pricingRows = [
   { service: 'AI Integration Workshop', format: 'Full day, up to 15 delegates', price: '£2,400' },
 ]
 
+const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/q1kftkq4u8w4sodx7n8k1esos1wam7rj'
+
 const faqs = [
   {
     q: 'Do you deliver training in-person or online?',
@@ -113,33 +115,45 @@ export default function Home() {
   const [enquiry, setEnquiry] = useState({ name: '', org: '', email: '', service: '', message: '' })
   const [enquiryLoading, setEnquiryLoading] = useState(false)
   const [enquiryDone, setEnquiryDone] = useState(false)
+  const [enquiryError, setEnquiryError] = useState('')
   const [checklistFirstName, setChecklistFirstName] = useState('')
   const [checklistEmail, setChecklistEmail] = useState('')
   const [checklistLoading, setChecklistLoading] = useState(false)
   const [checklistDone, setChecklistDone] = useState(false)
+  const [checklistError, setChecklistError] = useState('')
+
   const handleChecklistSubmit = async (e) => {
     e.preventDefault()
     setChecklistLoading(true)
+    setChecklistError('')
+
     try {
-      await fetch('https://api.brevo.com/v3/contacts', {
+      const response = await fetch(MAKE_WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          full_name: checklistFirstName,
           email: checklistEmail,
-          attributes: { FIRSTNAME: checklistFirstName },
-          listIds: [2],
-          updateEnabled: true,
+          organisation_name: '',
+          phone: '',
+          message: 'Newsletter signup',
+          source: 'website-newsletter-signup',
         }),
       })
-    } catch (_) {}
-    setChecklistLoading(false)
-    setChecklistDone(true)
-    const link = document.createElement('a')
-    link.href = '/CQC_Compliance_Checklist_2026.pdf'
-    link.download = 'CQC_Compliance_Checklist_2026.pdf'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+
+      if (response.status !== 200) {
+        throw new Error('Newsletter webhook returned status ' + response.status)
+      }
+
+      setChecklistFirstName('')
+      setChecklistEmail('')
+      setChecklistDone(true)
+    } catch (error) {
+      console.error('Newsletter signup failed:', error)
+      setChecklistError('Something went wrong. Please email kajidoricollective@gmail.com directly.')
+    } finally {
+      setChecklistLoading(false)
+    }
   }
 
   // Map service selection to the most relevant Trafft booking URL
@@ -163,23 +177,34 @@ export default function Home() {
   const handleEnquiry = async (e) => {
     e.preventDefault()
     setEnquiryLoading(true)
+    setEnquiryError('')
+
     try {
-      await supabase.from('enquiries_kajidori').insert([{
-        service_type: enquiry.service || 'general',
-        full_name: enquiry.name,
-        email: enquiry.email,
-        organisation: enquiry.org,
-        message: enquiry.message,
-        status: 'new',
-      }])
-    } catch (_) {}
-    setEnquiryLoading(false)
-    setEnquiryDone(true)
-    // Redirect to the relevant Trafft booking page after a short delay
-    // so the user sees the thank-you message before being taken to book
-    setTimeout(() => {
-      window.location.href = getBookingUrl(enquiry.service)
-    }, 3000)
+      const response = await fetch(MAKE_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          full_name: enquiry.name,
+          email: enquiry.email,
+          organisation_name: enquiry.org,
+          phone: '',
+          message: 'Service requested: ' + enquiry.service + ' | Message: ' + enquiry.message,
+          source: 'website-contact-form',
+        }),
+      })
+
+      if (response.status !== 200) {
+        throw new Error('Contact webhook returned status ' + response.status)
+      }
+
+      setEnquiry({ name: '', org: '', email: '', service: '', message: '' })
+      setEnquiryDone(true)
+    } catch (error) {
+      console.error('Contact form submission failed:', error)
+      setEnquiryError('Something went wrong. Please email kajidoricollective@gmail.com directly.')
+    } finally {
+      setEnquiryLoading(false)
+    }
   }
 
   return (
@@ -582,21 +607,13 @@ export default function Home() {
                 <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
                 </div>
-                <h3 className="text-xl font-extrabold text-blue-900 mb-2">Thank you, {enquiry.name ? enquiry.name.split(' ')[0] : 'you'}!</h3>
-                <p className="text-slate-700 text-sm font-semibold mb-3">Your enquiry has been received.</p>
-                <p className="text-slate-600 text-sm mb-5">We're now taking you to book your complimentary discovery call — so you can secure your slot straight away.</p>
-                <div className="flex items-center justify-center gap-2 text-blue-700 text-xs font-medium">
-                  <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                  </svg>
-                  Redirecting to your booking page…
-                </div>
-                <p className="text-slate-400 text-xs mt-4">Not redirected? <a href={getBookingUrl(enquiry.service)} className="text-blue-600 underline font-medium">Click here to book your call →</a></p>
+                <h3 className="text-xl font-extrabold text-blue-900 mb-2">Thank you.</h3>
+                <p className="text-slate-600 text-sm">Thank you. We will be in touch within one business day.</p>
               </div>
             ) : (
               <>
                 <h3 className="text-xl font-extrabold text-blue-900 mb-6">Book a Discovery Call</h3>
+                {enquiryError && <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm">{enquiryError}</div>}
                 <form onSubmit={handleEnquiry} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -639,8 +656,8 @@ export default function Home() {
                       placeholder="Number of staff, current CQC rating, what you're hoping to achieve..." />
                   </div>
                   <button type="submit" disabled={enquiryLoading}
-                    className="w-full bg-blue-900 text-white py-3.5 rounded-xl font-bold text-sm hover:bg-blue-800 transition-colors disabled:opacity-50">
-                    {enquiryLoading ? 'Sending...' : 'Book My Discovery Call →'}
+                    className="w-full bg-blue-900 text-white py-3.5 rounded-xl font-bold text-sm hover:bg-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    {enquiryLoading ? 'Sending…' : 'Book My Discovery Call →'}
                   </button>
                   <p className="text-xs text-slate-400 text-center">No commitment required. We respond within one business day.</p>
                 </form>
@@ -698,18 +715,8 @@ export default function Home() {
                     <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                       <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
                     </div>
-                    <h3 className="text-xl font-extrabold text-blue-900 mb-2">
-                      {checklistFirstName ? `${checklistFirstName}, your checklist is downloading!` : 'Your checklist is downloading!'}
-                    </h3>
-                    <p className="text-slate-600 text-sm mb-4">Check your Downloads folder. Book a free call to get personalised advice for your service.</p>
-                    <a
-                      href="https://tfft.io/CRIkyvF"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block bg-blue-900 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-blue-800 transition-colors"
-                    >
-                      Book My Free Strategy Call →
-                    </a>
+                    <h3 className="text-xl font-extrabold text-blue-900 mb-2">Thank you.</h3>
+                    <p className="text-slate-600 text-sm">Thank you. We will be in touch within one business day.</p>
                   </div>
                 ) : (
                   <>
@@ -723,6 +730,7 @@ export default function Home() {
                       <p className="text-slate-500 text-sm">Enter your details — your PDF downloads instantly.</p>
                     </div>
                     <form onSubmit={handleChecklistSubmit} className="space-y-4">
+                      {checklistError && <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm">{checklistError}</div>}
                       <div>
                         <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">First Name</label>
                         <input
@@ -748,9 +756,9 @@ export default function Home() {
                       <button
                         type="submit"
                         disabled={checklistLoading}
-                        className="w-full bg-blue-900 text-white font-bold py-4 rounded-xl text-sm hover:bg-blue-800 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                        className="w-full bg-blue-900 text-white font-bold py-4 rounded-xl text-sm hover:bg-blue-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
-                        {checklistLoading ? 'Preparing your download…' : (
+                        {checklistLoading ? 'Sending…' : (
                           <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> Download Free Checklist Now</>
                         )}
                       </button>
