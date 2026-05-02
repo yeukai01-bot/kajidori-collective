@@ -20,7 +20,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 
 // These emails always have admin access regardless of what is stored in the database
-const ADMIN_EMAILS = ['yeukai@kajidori.co.uk']
+const ADMIN_EMAILS = ['yeukai@kajidori.co.uk', 'yeukai1@hotmail.co.uk']
 
 function ProtectedRoute({ children, requiredRole }) {
   const { user, profile, loading } = useAuth()

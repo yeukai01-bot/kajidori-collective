@@ -4,7 +4,7 @@ import { supabase, TABLES } from '../lib/supabase'
 const AuthContext = createContext({})
 
 // These emails always have admin access regardless of database role
-const ADMIN_EMAILS = ['yeukai@kajidori.co.uk']
+const ADMIN_EMAILS = ['yeukai@kajidori.co.uk', 'yeukai1@hotmail.co.uk']
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
