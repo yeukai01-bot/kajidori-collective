@@ -74,7 +74,7 @@ export default function CareWorkerChecklist() {
 
     // Redirect to Mental Health Training booking after 5 seconds
     setTimeout(() => {
-      window.location.href = 'https://tfft.io/WLFOm6F'
+      window.location.href = 'https://tfft.io/DvNRyJs'
     }, 5000)
   }
 
@@ -94,7 +94,7 @@ export default function CareWorkerChecklist() {
             <span className="font-bold text-sm text-white tracking-wide">The Kajidori Collective</span>
           </div>
           <a
-            href="https://tfft.io/WLFOm6F"
+            href="https://tfft.io/DvNRyJs"
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs font-bold px-4 py-2 rounded-lg transition-opacity hover:opacity-90"
@@ -165,7 +165,7 @@ export default function CareWorkerChecklist() {
                     If the checklist resonated with you, Yeukai offers a free 20-minute conversation to talk through what you are experiencing and what support might look like.
                   </p>
                   <a
-                    href="https://tfft.io/WLFOm6F"
+                    href="https://tfft.io/DvNRyJs"
                     className="block w-full text-center py-3.5 rounded-xl font-bold text-sm transition-opacity hover:opacity-90"
                     style={{ backgroundColor: '#0a2463', color: '#facc15' }}
                   >
@@ -280,10 +280,10 @@ export default function CareWorkerChecklist() {
           </div>
           <h3 className="text-xl font-extrabold text-white mb-3">About Yeukai Kajidori</h3>
           <p className="text-blue-200 text-sm leading-relaxed mb-6 max-w-md mx-auto">
-            Yeukai is a mental health consultant, podcast host, and former registered manager with over 20 years in health and social care. She created this checklist because she has lived what you are living — and she knows that the people who care for others deserve to be cared for too.
+            Yeukai is a mental health consultant, podcast host, and former registered manager with over 20 years in health and social care. He created this checklist because he has lived what you are living — and he knows that the people who care for others deserve to be cared for too.
           </p>
           <a
-            href="https://tfft.io/WLFOm6F"
+            href="https://tfft.io/DvNRyJs"
             className="inline-block px-8 py-4 rounded-xl font-extrabold text-sm transition-opacity hover:opacity-90"
             style={{ backgroundColor: '#facc15', color: '#0a2463' }}
           >
