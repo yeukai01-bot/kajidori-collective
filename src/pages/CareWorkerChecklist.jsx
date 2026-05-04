@@ -74,7 +74,7 @@ export default function CareWorkerChecklist() {
 
     // Redirect to Mental Health Training booking after 5 seconds
     setTimeout(() => {
-      window.location.href = 'https://tfft.io/DvNRyJs'
+      window.location.href = '/reclaim-wellbeing'
     }, 5000)
   }
 

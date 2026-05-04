@@ -9,6 +9,7 @@ import YoureConfirmed from './pages/YoureConfirmed'
 import ApplyGuest from './pages/ApplyGuest'
 import CQCChecklist from './pages/CQCChecklist'
 import CareWorkerChecklist from './pages/CareWorkerChecklist'
+import ReclaimWellbeing from './pages/ReclaimWellbeing'
 import Login from './pages/portal/Login'
 import Register from './pages/portal/Register'
 import ForgotPassword from './pages/portal/ForgotPassword'
@@ -71,6 +72,7 @@ export default function App() {
       <Route path="/apply-to-be-a-guest" element={<PublicLayout><ApplyGuest /></PublicLayout>} />
       <Route path="/cqc-checklist" element={<CQCChecklist />} />
       <Route path="/care-worker-checklist" element={<CareWorkerChecklist />} />
+      <Route path="/reclaim-wellbeing" element={<ReclaimWellbeing />} />
       <Route path="/portal/login" element={<Login />} />
       <Route path="/portal/register" element={<Register />} />
       <Route path="/portal/forgot-password" element={<ForgotPassword />} />
