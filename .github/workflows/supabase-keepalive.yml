@@ -1,0 +1,49 @@
+# Keeps the Kajidori Supabase database awake.
+# Supabase pauses free projects after about a week with no activity,
+# which takes down the Client Portal, reviews and enquiry backups.
+# This job reads one row from the database every 3 days so that never happens.
+name: Supabase keep-awake
+
+on:
+  schedule:
+    - cron: "17 6 */3 * *"   # 06:17 UTC every 3 days
+  workflow_dispatch: {}       # lets you run it by hand from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    env:
+      # Public "anon" key - the same one the website already uses.
+      SUPABASE_URL: https://vsdkurupmcazzwrbeldh.supabase.co
+      SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZzZGt1cnVwbWNhenp3cmJlbGRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODA5NjUsImV4cCI6MjA4MzY1Njk2NX0.G2pM41KgndtQuFMFyyxn0Rbp9wJEUcn29IocT2pN-Lg
+    steps:
+      - name: Query the database
+        run: |
+          status=$(curl -s -o /tmp/out.json -w "%{http_code}" \
+            "$SUPABASE_URL/rest/v1/reviews_kajidori?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY")
+          echo "Supabase replied with HTTP $status"
+          cat /tmp/out.json; echo
+          if [ "$status" != "200" ]; then
+            echo "::error::Supabase did not answer normally (HTTP $status). The project may be paused - resume it in the Supabase dashboard."
+            exit 1
+          fi
+
+      # GitHub switches off scheduled jobs in repositories with no commits for 60 days.
+      # Once a month, record the date in a small file so this job keeps running.
+      - name: Monthly heartbeat commit
+        if: github.event_name == 'schedule'
+        run: |
+          if [ "$(date -u +%d)" -gt 03 ]; then echo "Not the start of the month - skipping."; exit 0; fi
+          git clone --depth 1 "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" repo
+          cd repo
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/keepalive.txt
+          git config user.name "keepalive-bot"
+          git config user.email "keepalive-bot@users.noreply.github.com"
+          git add .github/keepalive.txt
+          git commit -m "chore: monthly keep-awake heartbeat [skip ci]" || exit 0
+          git push
