@@ -1,7 +1,5 @@
 import { useState } from 'react'
 
-// SendFox list ID: 640731 — "Care Worker Wellbeing"
-const SENDFOX_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI5MzciLCJqdGkiOiIwYzlkNTQ2YTAwMWUyNzE2N2FhMTI4YjY3ZGY1NTU4MjMxM2YzY2Q2NjU0NTQzNGJjNjcwMDc2OWRmZTVhYmEyMThhNWM0NmVmMGI5YWVhNiIsImlhdCI6MTc3Nzc4MTcwNy41ODE2MDQsIm5iZiI6MTc3Nzc4MTcwNy41ODE2MDYsImV4cCI6NDkzMzQ1NTMwNy41NzAzNzMsInN1YiI6IjQ5OTc3Iiwic2NvcGVzIjpbXX0.MvG4shZrgGK-T49ZPxYgvsv7JNyDLR_qb6YhRi-VK_DLuZ4nx2uPUEFJI84gkiAU7zse1EQIiOs8OioioPtqYi9brYjGWCVVPYZLv0zeTp-GtlvqtfVM1Nvyfm0CSJmoAPsACKJN1AKvzwbndRfafUbc5AbYBy21Yl65m1DENQkUooCwKIurRHfTQCzhJHScbpBUKTlrjqtglHJ60IeLgvHeRiHAADJ-3X0P6ni-GFiEiFU1mL7ZvMGyxs83mhnneSc8E9npMSRbfbqmrR-uovUcJ-1UHC_AoGoUd_Pfmnq1Ov3hS5DjUPaU1yIlUNmvWFxWXz43ytgpw7_eOILtUi29V6RpkeKEP7_UYcmIIoU9ruKBF5m1zDsBbPkDDyk7U0GD439rQ_6FuQyWOVzouyqSjwlX9eMdcTPo3iS-SiftoDqDTa3xpsJLGI4ay188qI0g71UYtUxCrW2jE1yXKhjo2K5NOyDP60ZNo5_nv89tHJ5bIi3rfyKgpZ_fSstlImLGvLWXcM2QLm9HY4ndmPOlj2hf0urRiVIbpdWcyvuvYwLWh-g_iwxylhjENxeVBBnuzE8vV25qUUEYWZWmXMTJN31sMtp9YYpcXVvss3C70_t2wqC4CYK2F7F4zyrI3h9xTklNd8kCJ3PhgLcQj5brmsb_jwEvwv_Yj_FiVwk'
 
 const CHECKLIST_ITEMS = [
   'Your 7 mental health rights at work — most employers never mention them',
@@ -43,22 +41,22 @@ export default function CareWorkerChecklist() {
     setLoading(true)
     setError('')
 
+    // Send the lead to Make (emails Yeukai the new sign-up)
     try {
-      // Add contact to SendFox — list 640731 "Care Worker Wellbeing"
-      await fetch('https://api.sendfox.com/contacts', {
+      await fetch('https://hook.eu1.make.com/q1kftkq4u8w4sodx7n8k1esos1wam7rj', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SENDFOX_TOKEN}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email,
-          first_name: firstName,
-          lists: [640731],
+          full_name: firstName,
+          email: email,
+          organisation_name: '',
+          phone: '',
+          message: 'Checklist download',
+          source: 'care-worker-checklist-download',
         }),
       })
     } catch (_) {
-      // Silent fail — PDF still downloads even if API call fails
+      // PDF still downloads even if the lead capture call fails
     }
 
     setLoading(false)

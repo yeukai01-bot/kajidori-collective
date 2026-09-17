@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
+const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/q1kftkq4u8w4sodx7n8k1esos1wam7rj'
+
 const TABS = [
   { id: 'consulting', label: 'Strategic Consulting', num: '01' },
   { id: 'training', label: 'Mental Health Training', num: '02' },
@@ -79,40 +81,46 @@ export default function Contact() {
     setLoading(true)
     setError('')
 
+    const serviceLabel = (TABS.find(t => t.id === tab) || {}).label || tab
+    const details = FIELDS[tab]
+      .filter(f => !['fullName', 'email', 'organisation', 'phone'].includes(f.name) && form[f.name])
+      .map(f => f.label + ': ' + form[f.name])
+      .join(' | ')
+
+    // Backup copy in the Supabase enquiries table (does not block the visitor if it fails)
+    supabase.from('enquiries_kajidori').insert([{
+      service_type: tab,
+      full_name: form.fullName || '',
+      email: form.email || '',
+      phone: form.phone || null,
+      organisation: form.organisation || null,
+      role_title: form.jobTitle || null,
+      message: form.challenge || form.goals || form.message || form.aiWorkshop || null,
+      staff_count: form.staffCount ? String(form.staffCount) : null,
+      status: 'new',
+    }]).then(({ error: dbError }) => { if (dbError) console.warn('DB save failed:', dbError.message) })
+
     try {
-      const { error: dbError } = await supabase
-        .from('enquiries_kajidori')
-        .insert([{
-          service_type: tab,
+      const response = await fetch(MAKE_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           full_name: form.fullName || '',
           email: form.email || '',
-          phone: form.phone || null,
-          organisation: form.organisation || null,
-          role_title: form.jobTitle || null,
-          message: form.challenge || form.goals || form.message || form.aiWorkshop || null,
-          staff_count: form.staffCount ? String(form.staffCount) : null,
-          status: 'new',
-        }])
-      if (dbError) console.warn('DB save failed:', dbError.message)
-      if (tab === 'consulting') {
-        fetch('https://hook.eu1.make.com/q1kftkq4u8w4sodx7n8k1esos1wam7rj', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            full_name: form.fullName,
-            email: form.email,
-            organisation_name: form.organisation || '',
-            phone: form.phone || '',
-            message: 'Job title: ' + (form.jobTitle || '') + ' | Challenge: ' + (form.challenge || ''),
-            source: 'website-contact-form'
-          })
-        }).catch(() => {})
+          organisation_name: form.organisation || '',
+          phone: form.phone || '',
+          message: 'Service: ' + serviceLabel + (details ? ' | ' + details : ''),
+          source: 'website-contact-page-' + tab,
+        }),
+      })
+      if (response.status !== 200) {
+        throw new Error('Enquiry webhook returned status ' + response.status)
       }
       setSuccess(true)
       setForm({})
     } catch (err) {
-      setSuccess(true)
-      setForm({})
+      console.error('Enquiry submission failed:', err)
+      setError('Sorry, something went wrong sending your enquiry. Please email kajidoricollective@gmail.com directly.')
     } finally {
       setLoading(false)
     }
@@ -128,7 +136,7 @@ export default function Contact() {
             <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
           </div>
           <h2 className="text-2xl font-bold text-blue-900 mb-3">Application Received!</h2>
-          <p className="text-slate-600 mb-6">Thank you for your enquiry. A member of The Kajidori Collective team will be in touch within 2 business days.</p>
+          <p className="text-slate-600 mb-6">Thank you for your enquiry. A member of The Kajidori Collective team will be in touch within one business day.</p>
           <button onClick={() => setSuccess(false)} className="bg-blue-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-colors">
             Submit Another Enquiry
           </button>

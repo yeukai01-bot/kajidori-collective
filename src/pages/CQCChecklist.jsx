@@ -37,19 +37,23 @@ export default function CQCChecklist() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    // Submit to Brevo — list #2 (CQC Checklist Downloads), with first name attribute
+    // Send the lead to Make (emails Yeukai the new sign-up)
     try {
-      await fetch('https://api.brevo.com/v3/contacts', {
+      await fetch('https://hook.eu1.make.com/q1kftkq4u8w4sodx7n8k1esos1wam7rj', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email,
-          attributes: { FIRSTNAME: firstName },
-          listIds: [2],
-          updateEnabled: true,
+          full_name: firstName,
+          email: email,
+          organisation_name: '',
+          phone: '',
+          message: 'Checklist download',
+          source: 'cqc-checklist-download',
         }),
       })
-    } catch (_) {}
+    } catch (_) {
+      // PDF still downloads even if the lead capture call fails
+    }
     setLoading(false)
     setSubmitted(true)
     // Trigger immediate PDF download
